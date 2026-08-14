@@ -1,0 +1,23 @@
+/* ============================================================
+   Lantern — pages/landing.css (landing-page extras)
+   ============================================================ */
+
+.hero h1 .grad { background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero h1 .soft { color: var(--text-dim); font-style: italic; }
+.live-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .42rem .95rem;
+  border-radius: 99px; border: 1px solid rgba(88,214,141,.35); background: rgba(88,214,141,.08);
+  color: var(--green); font-size: .78rem; font-weight: 600; }
+.live-pill svg { width: 13px; height: 13px; }
+
+.quote-band .logo-row { display: flex; justify-content: center; gap: 2.2rem; margin-top: 2.2rem;
+  flex-wrap: wrap; opacity: .5; }
+.quote-band .logo-row span { font-family: var(--font-display); font-size: 1.05rem; color: var(--text-dim); }
+
+/* Demos replayed on scroll */
+#demo .step-badge { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem;
+  font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); margin-bottom: .4rem; }
+
+.hero-stage { perspective: 1200px; }
+.phone { transform: rotateY(-8deg) rotateX(2deg); transition: transform .8s var(--ease-cine); }
+.hero-stage:hover .phone { transform: rotateY(0deg) rotateX(0deg); }
+@media (max-width: 1080px) { .phone { transform: none; } }

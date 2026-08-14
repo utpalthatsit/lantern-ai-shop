@@ -1,0 +1,50 @@
+/* ============================================================
+   Lantern — pages/chat.css
+   ============================================================ */
+.chat-layout { display: grid; grid-template-columns: 320px 1fr; gap: 1.2rem; height: calc(100vh - var(--topbar-h) - 3.6rem); min-height: 480px; }
+.conv-pane { display: flex; flex-direction: column; overflow: hidden; }
+.conv-pane .conv-scroll { flex: 1; overflow-y: auto; padding: .6rem; }
+.conv-pane .pane-head { padding: 1.1rem 1.2rem .5rem; }
+.conv-pane .pane-head .sub { font-size: .78rem; color: var(--text-faint); }
+
+.thread-pane { display: flex; flex-direction: column; overflow: hidden; }
+.thread-head { display: flex; align-items: center; gap: .8rem; padding: .9rem 1.3rem;
+  border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); }
+.thread-head .t-info { flex: 1; min-width: 0; }
+.thread-head .t-name { font-weight: 650; font-size: .98rem; }
+.thread-head .t-meta { font-size: .76rem; color: var(--text-faint); }
+.thread-scroll { flex: 1; overflow-y: auto; padding: 1.4rem 1.3rem; display: flex; flex-direction: column; }
+.thread-scroll .day-sep { align-self: center; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-faint); background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  padding: .28rem .9rem; border-radius: 99px; margin: .4rem 0 1rem; }
+.thread-input { display: flex; align-items: flex-end; gap: .6rem; padding: .9rem 1.2rem;
+  border-top: 1px solid var(--border); background: rgba(255,255,255,.015); }
+.thread-input .ta { flex: 1; resize: none; min-height: 44px; max-height: 120px; border-radius: 16px;
+  background: rgba(255,255,255,.05); border: 1px solid var(--border); padding: .7rem 1rem; font-size: .9rem; }
+.thread-input .ta:focus { border-color: rgba(246,179,82,.5); }
+.send-btn { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+  background: var(--gold-grad); color: #1a1004; box-shadow: 0 6px 20px rgba(255,138,61,.35);
+  transition: transform .2s; }
+.send-btn:hover { transform: translateY(-2px); }
+.send-btn svg { width: 18px; height: 18px; }
+.mic-btn { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); }
+.mic-btn.listening { color: var(--rose); border-color: rgba(226,85,122,.5);
+  animation: mic-pulse 1.4s ease-in-out infinite; }
+@keyframes mic-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(226,85,122,.35); } 50% { box-shadow: 0 0 0 10px rgba(226,85,122,0); } }
+
+.escalate-tag { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--rose); }
+.escalate-tag svg { width: 13px; height: 13px; }
+.quick-replies { display: flex; flex-wrap: wrap; gap: .5rem; padding: 0 1.2rem .6rem; }
+@media (max-width: 900px) {
+  .chat-layout { grid-template-columns: 1fr; height: auto; }
+  .conv-pane { display: none; }
+  .conv-pane.open { display: flex; }
+  .thread-pane { min-height: 70vh; }
+}
+@media (max-width: 480px) {
+  .thread-head .badge { display: none; }
+  .thread-head { padding: .7rem 1rem; }
+  .thread-input { padding: .7rem .8rem; }
+}

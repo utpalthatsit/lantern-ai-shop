@@ -1,0 +1,16 @@
+node_modules/
+.env
+.env.local
+.DS_Store
+dist/
+coverage/
+*.log
+supabase/.temp/
+
+# Freebuff app runtime data (not part of the project)
+desktop-v2.db
+desktop-v2.db-shm
+desktop-v2.db-wal
+.freebuff/
+preview-*.log
+run.md

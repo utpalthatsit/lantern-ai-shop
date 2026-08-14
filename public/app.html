@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lantern — Owner Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages/chat.css">
+<link rel="stylesheet" href="css/pages/inventory.css">
+<link rel="stylesheet" href="css/pages/bookings.css">
+<link rel="stylesheet" href="css/pages/insights.css">
+<link rel="stylesheet" href="css/pages/marketing.css">
+</head>
+<body id="appPage">
+
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="aurora" aria-hidden="true">
+  <div class="blob blob-1" style="opacity:.2"></div>
+  <div class="blob blob-2" style="opacity:.18"></div>
+  <div class="blob blob-3" style="opacity:.14"></div>
+</div>
+
+<!-- ============ AUTH GATE ============ -->
+<div class="auth-screen" id="authScreen">
+  <div class="card auth-card hairline">
+    <div class="a-brand">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9z"/><path d="M19 15.5v4M17 17.5h4"/></svg></span>
+      Lan<em>tern</em>
+    </div>
+
+    <div id="authStepPhone">
+      <div class="a-title">Welcome back</div>
+      <p class="a-sub">Sign in with your WhatsApp number — no passwords, ever.</p>
+      <div class="field" style="margin-bottom:1rem">
+        <label for="authPhone">Phone number</label>
+        <input class="input" id="authPhone" type="tel" placeholder="+91 98765 43210" inputmode="tel">
+      </div>
+      <button class="btn btn-gold" id="authSendOtp" style="width:100%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        Send code
+      </button>
+      <p class="demo-hint">Demo mode is on — enter any number, code <b>123456</b></p>
+    </div>
+
+    <div id="authStepOtp" style="display:none">
+      <div class="a-title">Enter the code</div>
+      <p class="a-sub" id="otpSentTo"></p>
+      <div class="otp-row" id="otpRow">
+        <input class="input" maxlength="1" inputmode="numeric"><input class="input" maxlength="1" inputmode="numeric"><input class="input" maxlength="1" inputmode="numeric"><input class="input" maxlength="1" inputmode="numeric"><input class="input" maxlength="1" inputmode="numeric"><input class="input" maxlength="1" inputmode="numeric">
+      </div>
+      <button class="btn btn-gold" id="authVerify" style="width:100%; margin-top:1.2rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Verify &amp; open console
+      </button>
+      <button class="btn btn-ghost" id="authBack" style="width:100%; margin-top:.6rem">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div class="app-shell" id="appShell" style="display:none">
+  <aside class="sidebar">
+    <a class="brand-lockup brand" href="index.html">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9z"/><path d="M19 15.5v4M17 17.5h4"/></svg></span>
+      <span>Lan<em>tern</em></span>
+    </a>
+
+    <nav id="appNav">
+      <a href="#chat" data-tab="chat" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Chat</span><span class="nbadge" id="navUnread">2</span>
+      </a>
+      <a href="#inventory" data-tab="inventory">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+        <span>Inventory</span><span class="nbadge" id="navLowStock" style="display:none"></span>
+      </a>
+      <a href="#bookings" data-tab="bookings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Bookings</span>
+      </a>
+      <a href="#insights" data-tab="insights">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        <span>Insights</span>
+      </a>
+      <a href="#marketing" data-tab="marketing">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9z"/><path d="M19 15.5v4M17 17.5h4"/></svg>
+        <span>Marketing</span>
+      </a>
+    </nav>
+
+    <div class="card shop-card">
+      <div class="shop-row">
+        <span class="s-ava" id="shopAva">E</span>
+        <div class="grow">
+          <div class="s-name" id="shopName">Ember Café</div>
+          <div class="s-lang" id="shopLang">English + हिन्दी</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost signout" id="signOut">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">Chat</h1>
+        <div class="sub" id="pageSub">Live conversations with your customers</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="demo-banner" id="demoBanner" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+        Demo mode — sample data
+      </div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="search" placeholder="Search…" aria-label="Search">
+      </div>
+      <div class="owner-chip">
+        <span class="o-ava" id="ownerAva">P</span>
+        <span class="o-name" id="ownerName">Priya</span>
+      </div>
+    </header>
+
+    <div class="page" id="pageContainer">
+      <section class="page" id="page-chat" style="display:none"></section>
+      <section class="page" id="page-inventory" style="display:none"></section>
+      <section class="page" id="page-bookings" style="display:none"></section>
+      <section class="page" id="page-insights" style="display:none"></section>
+      <section class="page" id="page-marketing" style="display:none"></section>
+    </div>
+  </main>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+<script>window.SUPABASE_CONFIG = { url: "", anonKey: "" };</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

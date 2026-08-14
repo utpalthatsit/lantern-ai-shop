@@ -1,0 +1,30 @@
+/* ============================================================
+   Lantern — pages/marketing.css
+   ============================================================ */
+.draft-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.2rem; }
+.draft-card { padding: 1.4rem; display: flex; flex-direction: column; gap: .9rem; transition: transform .3s var(--ease-cine), border-color .3s; }
+.draft-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.18); }
+.draft-card.sent { opacity: .72; }
+.draft-card .d-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; }
+.channel-badge { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; font-weight: 700;
+  padding: .3rem .7rem; border-radius: 99px; letter-spacing: .06em; }
+.channel-badge svg { width: 13px; height: 13px; }
+.channel-badge.wa { color: #7de3a8; background: rgba(88,214,141,.1); border: 1px solid rgba(88,214,141,.3); }
+.channel-badge.ig { color: #ff9ad5; background: rgba(226,85,122,.1); border: 1px solid rgba(226,85,122,.35); }
+.channel-badge.sms { color: #9ec7ff; background: rgba(63,157,246,.1); border: 1px solid rgba(63,157,246,.3); }
+.draft-card .d-content { font-size: .93rem; line-height: 1.6; color: var(--text-dim);
+  background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px; padding: .9rem 1rem; }
+.draft-card .d-content .hash { color: var(--amber); }
+.draft-card .d-why { font-size: .8rem; color: var(--text-faint); display: flex; align-items: flex-start; gap: .45rem; }
+.draft-card .d-why svg { width: 14px; height: 14px; flex: none; color: var(--violet); margin-top: 2px; }
+.draft-card .d-actions { display: flex; gap: .6rem; margin-top: auto; }
+.draft-card .d-actions .btn { flex: 1; padding: .6rem 1rem; font-size: .86rem; }
+
+.mkt-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; flex-wrap: wrap; }
+.mkt-head .gen { display: flex; align-items: center; gap: .5rem; font-size: .84rem; color: var(--text-dim); }
+.sparkle { color: var(--amber); display: inline-flex; }
+.sparkle svg { width: 15px; height: 15px; }
+.gen-btn { display: inline-flex; align-items: center; gap: .5rem; }
+.gen-btn.loading { pointer-events: none; opacity: .7; }
+.gen-btn.loading svg { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

@@ -1,0 +1,27 @@
+/* ============================================================
+   Lantern — pages/inventory.css
+   ============================================================ */
+.inv-toolbar { display: flex; align-items: center; gap: .8rem; margin-bottom: 1.3rem; flex-wrap: wrap; }
+.inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+.item-card { padding: 1.3rem; display: flex; flex-direction: column; gap: .8rem; transition: transform .3s var(--ease-cine), border-color .3s; }
+.item-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.18); }
+.item-card.low { border-color: rgba(246,179,82,.4); box-shadow: 0 0 0 1px rgba(246,179,82,.12), var(--shadow-card); }
+.item-card.out { border-color: rgba(255,107,107,.35); opacity: .75; }
+.item-card .i-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .6rem; }
+.item-card .i-emoji { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center;
+  font-size: 1.25rem; background: rgba(255,255,255,.06); border: 1px solid var(--border); }
+.item-card .i-name { font-weight: 650; font-size: .97rem; }
+.item-card .i-sku { font-size: .72rem; color: var(--text-faint); font-family: ui-monospace, monospace; margin-top: 1px; }
+.item-card .i-price { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; }
+.item-card .i-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+.qty-controls { display: inline-flex; align-items: center; gap: .4rem; }
+.qty-controls button { width: 28px; height: 28px; border-radius: 9px; background: var(--surface);
+  border: 1px solid var(--border); color: var(--text-dim); display: grid; place-items: center; transition: all .15s; }
+.qty-controls button:hover { color: var(--amber); border-color: rgba(246,179,82,.45); }
+.qty-controls button svg { width: 13px; height: 13px; }
+.qty-controls .q { min-width: 30px; text-align: center; font-weight: 700; font-size: .92rem; }
+.stock-bar { height: 4px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+.stock-bar i { display: block; height: 100%; border-radius: 99px; background: var(--gold-grad); }
+.item-card.low .stock-bar i { background: linear-gradient(90deg,#f6b352,#ff8a3d); }
+.item-card.out .stock-bar i { background: var(--danger); }
+@media (max-width: 760px) { .inv-grid { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); } }

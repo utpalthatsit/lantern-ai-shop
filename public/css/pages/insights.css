@@ -1,0 +1,44 @@
+/* ============================================================
+   Lantern — pages/insights.css
+   ============================================================ */
+.summary-card { padding: 1.6rem 1.7rem; position: relative; overflow: hidden; }
+.summary-card .sc-orb { position: absolute; width: 220px; height: 220px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,138,61,.22), transparent 70%); filter: blur(40px);
+  top: -80px; right: -40px; pointer-events: none; }
+.summary-card .sc-head { display: flex; align-items: center; gap: .6rem; font-size: .78rem;
+  font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); margin-bottom: .9rem; }
+.summary-card .sc-head svg { width: 15px; height: 15px; }
+.summary-card blockquote { font-family: var(--font-display); font-size: clamp(1.15rem, 2vw, 1.5rem);
+  line-height: 1.45; max-width: 56rem; }
+.summary-card .sc-tags { display: flex; gap: .6rem; margin-top: 1.1rem; flex-wrap: wrap; }
+
+.chart-wrap { padding: 1.2rem 1.3rem 1.4rem; }
+.bar-chart { display: flex; align-items: flex-end; gap: .8rem; height: 190px; padding-top: 1rem; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: .5rem; height: 100%; justify-content: flex-end; }
+.bar-col .bar { width: 100%; max-width: 44px; border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(180deg, rgba(247,201,107,.9), rgba(255,138,61,.45));
+  box-shadow: 0 0 18px rgba(255,138,61,.18); position: relative; transition: height 1s var(--ease-cine); }
+.bar-col .bar.hl { background: linear-gradient(180deg, #f7c96b, #ff8a3d); box-shadow: 0 0 26px rgba(255,138,61,.45); }
+.bar-col .lbl { font-size: .7rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
+.bar-col .val { font-size: .72rem; font-weight: 700; color: var(--text-dim); }
+.bar-col .val.hl { color: var(--amber); }
+.chart-legend { display: flex; gap: 1.2rem; margin-top: 1rem; font-size: .76rem; color: var(--text-faint); flex-wrap: wrap; }
+.chart-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: .35rem; }
+
+.best-list { display: flex; flex-direction: column; }
+.best-row { display: flex; align-items: center; gap: .9rem; padding: .8rem 1rem; }
+.best-row .rank { font-family: var(--font-display); font-size: 1.15rem; color: var(--text-faint); width: 22px; text-align: center; }
+.best-row .rank.top { background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.best-row .b-name { flex: 1; font-weight: 600; font-size: .92rem; }
+.best-row .b-count { font-size: .84rem; color: var(--text-dim); }
+.best-row .b-bar { width: 90px; height: 5px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+.best-row .b-bar i { display: block; height: 100%; border-radius: 99px; background: var(--gold-grad); }
+
+.suggest-card { display: flex; align-items: center; gap: 1rem; padding: 1.3rem 1.4rem;
+  border-color: rgba(246,179,82,.3); background: linear-gradient(120deg, rgba(246,179,82,.07), rgba(255,255,255,.02)); }
+.suggest-card .s-ico { width: 44px; height: 44px; border-radius: 13px; flex: none; display: grid; place-items: center;
+  background: rgba(246,179,82,.14); border: 1px solid rgba(246,179,82,.3); color: var(--amber); }
+.suggest-card .s-ico svg { width: 20px; height: 20px; }
+.suggest-card .s-text { flex: 1; }
+.suggest-card .s-text b { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; display: block; }
+.suggest-card .s-text span { font-size: .84rem; color: var(--text-dim); }

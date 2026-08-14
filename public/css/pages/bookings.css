@@ -1,0 +1,34 @@
+/* ============================================================
+   Lantern — pages/bookings.css
+   ============================================================ */
+.day-strip { display: flex; gap: .7rem; overflow-x: auto; padding-bottom: .4rem; margin-bottom: 1.4rem; }
+.day-chip { flex: none; display: flex; flex-direction: column; align-items: center; gap: .2rem;
+  padding: .7rem 1.05rem; border-radius: 14px; border: 1px solid var(--border); background: var(--surface);
+  cursor: pointer; transition: all .2s; min-width: 64px; }
+.day-chip .dow { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); }
+.day-chip .dnum { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; }
+.day-chip .dcnt { font-size: .68rem; color: var(--text-faint); }
+.day-chip:hover { border-color: var(--border-strong); }
+.day-chip.active { border-color: rgba(246,179,82,.55); background: rgba(246,179,82,.1);
+  box-shadow: 0 6px 24px rgba(255,138,61,.15); }
+.day-chip.active .dnum { color: var(--amber); }
+.day-chip.today .dow { color: var(--amber); }
+
+.bk-timeline { display: flex; flex-direction: column; gap: .8rem; }
+.bk-card { display: flex; gap: 1rem; padding: 1.1rem 1.2rem; align-items: center; transition: border-color .25s, transform .25s; }
+.bk-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-2px); }
+.bk-card .bk-time { flex: none; width: 74px; display: flex; flex-direction: column; align-items: center; gap: .15rem; }
+.bk-card .bk-time .t { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; }
+.bk-card .bk-time .d { font-size: .7rem; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; }
+.bk-card .bk-line { flex: none; width: 2px; align-self: stretch; border-radius: 2px; background: rgba(255,255,255,.1); }
+.bk-card.confirmed .bk-line { background: var(--teal); box-shadow: 0 0 10px rgba(63,216,192,.5); }
+.bk-card.completed .bk-line { background: var(--green); }
+.bk-card.no_show .bk-line { background: var(--danger); }
+.bk-card.cancelled .bk-line { background: rgba(255,255,255,.18); }
+.bk-card .bk-main { flex: 1; min-width: 0; }
+.bk-card .bk-service { font-weight: 650; font-size: .98rem; }
+.bk-card .bk-cust { font-size: .82rem; color: var(--text-dim); margin-top: 2px; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.bk-card .bk-notes { font-size: .8rem; color: var(--text-faint); margin-top: 3px; font-style: italic; }
+.bk-card .bk-actions { display: flex; gap: .5rem; flex: none; }
+.bk-card.past { opacity: .62; }
+@media (max-width: 760px) { .bk-card { flex-wrap: wrap; } .bk-card .bk-actions { width: 100%; } }
