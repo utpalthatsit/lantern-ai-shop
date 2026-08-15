@@ -1,5 +1,5 @@
 /* ============================================================
-   Lantern — utils/formatters.js
+   ShopSathi — utils/formatters.js
    ============================================================ */
 
 export function inr(n) {
@@ -56,4 +56,36 @@ export function esc(s) {
 export function pctChange(cur, prev) {
   if (!prev) return null;
   return Math.round(((cur - prev) / prev) * 100);
+}
+
+/* ---------- ShopSathi extras ---------- */
+export function money(n, currency = "INR") {
+  if (n == null) return "—";
+  const num = Number(n) || 0;
+  if (currency === "INR") return "₹" + num.toLocaleString("en-IN", { maximumFractionDigits: 2 });
+  return `${currency} ${num.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+}
+
+export function fullDate(iso) {
+  return new Date(iso).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+}
+
+export function dateTimeLabel(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+}
+
+/* Status → badge class + label (orders + bookings) */
+export function statusBadge(status) {
+  const map = {
+    pending: { cls: "gold", label: "Pending" },
+    confirmed: { cls: "teal", label: "Confirmed" },
+    processing: { cls: "violet", label: "Processing" },
+    completed: { cls: "green", label: "Completed" },
+    cancelled: { cls: "faint", label: "Cancelled" },
+    no_show: { cls: "danger", label: "No-show" },
+    out: { cls: "danger", label: "Out of stock" },
+  };
+  const m = map[status] || { cls: "", label: status };
+  return `<span class="badge ${m.cls}">${m.label}</span>`;
 }

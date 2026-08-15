@@ -1,5 +1,5 @@
 /* ============================================================
-   Lantern — utils/validators.js
+   ShopSathi — utils/validators.js
    ============================================================ */
 
 export function isPhone(v) {

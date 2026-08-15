@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — powered by ShopSathi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F3EB;--ink:#191914;--dim:#5d5747;--faint:#8a8372;--amber:#a16207;--card:rgba(255,255,255,.66);--border:rgba(25,25,20,.12);--green:#1a8a76;--rose:#dc2626;--radius:16px;--serif:'Instrument Serif',serif;--sans:'Inter',system-ui,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem clamp(1rem,4vw,2.5rem);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:.6rem;font-family:var(--serif);font-size:1.25rem;text-decoration:none;color:var(--ink)}
+.brand .mark{width:32px;height:32px;border-radius:10px;background:#191914;color:#F7F3EB;display:grid;place-items:center}
+.brand .mark svg{width:17px;height:17px}
+.brand em{font-style:normal;color:var(--amber)}
+.open-console{font-size:.8rem;color:var(--dim);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:99px}
+main{max-width:1080px;margin:0 auto;padding:2.5rem clamp(1rem,4vw,2.5rem)6rem}
+.hero{position:relative;border-radius:24px;padding:clamp(1.8rem,5vw,3.2rem);margin-bottom:2.4rem;background:linear-gradient(135deg,#1d1d18 0%,#2e2b21 55%,#4a3d22 100%);color:#F7F3EB;overflow:hidden;min-height:250px;display:flex;flex-direction:column;justify-content:center}
+.hero::before{content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 70%)}
+.hero::after{content:"";position:absolute;left:-40px;bottom:-90px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.18),transparent 70%)}
+.hero .h-ava{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-family:var(--serif);font-size:1.7rem;color:#1d1d18;background:linear-gradient(160deg,#f3d68c,#e0b84e);box-shadow:0 10px 24px rgba(0,0,0,.3);flex:none;margin-bottom:1rem}
+.hero .h-cat{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#e0b84e;margin-bottom:.5rem}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.02;margin-bottom:.5rem}
+.hero .h-tag{font-size:clamp(.98rem,2.5vw,1.12rem);color:rgba(247,243,235,.82);max-width:46ch;line-height:1.55;margin-bottom:1.3rem}
+.hero .h-meta{display:flex;gap:1rem;flex-wrap:wrap;color:rgba(247,243,235,.72);font-size:.86rem;margin-bottom:1.6rem}
+.hero .h-meta span{display:inline-flex;align-items:center;gap:.4rem}
+.hero .h-cta{display:flex;gap:.7rem;flex-wrap:wrap;position:relative;z-index:2}
+.btn-wa{display:inline-flex;align-items:center;gap:.5rem;background:#25d366;color:#062b1a;border:none;border-radius:99px;padding:.85rem 1.5rem;font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;font-family:var(--sans)}
+.btn-wa:hover{transform:translateY(-1px);background:#2ce572}
+.btn-wa svg{width:17px;height:17px}
+.btn-ghost2{display:inline-flex;align-items:center;gap:.5rem;background:rgba(247,243,235,.12);color:#F7F3EB;border:1px solid rgba(247,243,235,.35);border-radius:99px;padding:.85rem 1.5rem;font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;font-family:var(--sans)}
+.btn-ghost2:hover{background:rgba(247,243,235,.22)}
+.btn-ghost2 svg{width:17px;height:17px}
+.chat-launch{margin-left:auto}
+.btn{display:inline-flex;align-items:center;gap:.5rem;background:#191914;color:#F7F3EB;border:none;border-radius:99px;padding:.85rem 1.5rem;font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;font-family:var(--sans)}
+.btn:hover{transform:translateY(-1px)}
+.btn svg{width:17px;height:17px}
+.section-label{font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.1rem}
+.prod{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .15s ease,box-shadow .15s ease}
+.prod:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(25,25,20,.12)}
+.prod-img{position:relative;height:150px;background:linear-gradient(150deg,#e9e2d2,#d9d0b8);display:grid;place-items:center;font-family:var(--serif);font-size:2.6rem;color:rgba(25,25,20,.55);flex:none}
+.prod-img .ph{display:grid;place-items:center;width:100%;height:100%;font-family:var(--serif);font-size:2.6rem;color:rgba(25,25,20,.55)}
+.prod-img img{width:100%;height:100%;object-fit:cover;display:block}
+.prod-img .badge{position:absolute;top:.7rem;left:.7rem;background:rgba(247,243,235,.92);backdrop-filter:blur(4px)}
+.prod-body{padding:1.1rem 1.2rem 1.2rem;display:flex;flex-direction:column;gap:.45rem;flex:1}
+.prod .p-name{font-family:var(--serif);font-size:1.2rem}
+.prod .p-cat{font-size:.72rem;color:var(--faint);text-transform:uppercase;letter-spacing:.08em}
+.prod .p-desc{font-size:.84rem;color:var(--dim);line-height:1.5}
+.prod .p-price{display:flex;align-items:baseline;gap:.5rem;margin-top:auto}
+.prod .p-price b{font-size:1.15rem}
+.prod .p-price .strike{color:var(--faint);text-decoration:line-through;font-size:.85rem}
+.prod .p-price .off{background:rgba(220,38,38,.1);color:var(--rose);font-size:.7rem;font-weight:700;padding:.15rem .45rem;border-radius:99px}
+.badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:700;padding:.25rem .6rem;border-radius:99px;align-self:flex-start}
+.badge.in{background:rgba(26,138,118,.1);color:var(--green)}
+.badge.low{background:rgba(161,98,7,.12);color:var(--amber)}
+.badge.out{background:rgba(220,38,38,.1);color:var(--rose)}
+.empty{grid-column:1/-1;text-align:center;color:var(--faint);padding:3rem 0;font-size:.95rem}
+footer{border-top:1px solid var(--border);padding:1.4rem clamp(1rem,4vw,2.5rem);display:flex;justify-content:space-between;gap:1rem;color:var(--faint);font-size:.8rem;flex-wrap:wrap}
+.chat-widget{position:fixed;right:1.4rem;bottom:1.4rem;width:min(380px,calc(100vw - 2.8rem));background:#fff;border:1px solid var(--border);border-radius:20px;box-shadow:0 24px 70px rgba(25,25,20,.22);overflow:hidden;display:flex;flex-direction:column;z-index:50;max-height:min(600px,calc(100vh - 5rem))}
+.chat-widget.closed .chat-body,.chat-widget.closed .chat-form{display:none}
+.chat-head{display:flex;align-items:center;gap:.7rem;padding:.85rem 1rem;background:#191914;color:#F7F3EB}
+.chat-head .dot{width:9px;height:9px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.25);flex:none}
+.chat-head .nm{font-weight:600;font-size:.92rem}
+.chat-head .st{font-size:.72rem;opacity:.75}
+.chat-head .min{margin-left:auto;background:none;border:none;color:#F7F3EB;font-size:1.2rem;cursor:pointer;line-height:1}
+.chat-body{padding:1rem;display:flex;flex-direction:column;gap:.6rem;overflow-y:auto;min-height:240px;max-height:340px;background:#faf7f0}
+.bubble{max-width:82%;padding:.6rem .85rem;border-radius:14px;font-size:.87rem;line-height:1.5;white-space:pre-wrap}
+.bubble.cust{align-self:flex-end;background:#191914;color:#F7F3EB;border-bottom-right-radius:4px}
+.bubble.ai{align-self:flex-start;background:#eee9dd;color:var(--ink);border-bottom-left-radius:4px}
+.bubble.sys{align-self:center;background:transparent;color:var(--faint);font-size:.75rem}
+.typing{display:inline-flex;gap:4px;padding:.6rem .85rem}
+.typing i{width:6px;height:6px;border-radius:50%;background:#a89f8a;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.chat-form{border-top:1px solid var(--border);padding:.7rem;display:flex;gap:.5rem;background:#fff}
+.chat-form input{flex:1;border:1px solid var(--border);border-radius:99px;padding:.7rem 1rem;font-size:.88rem;font-family:var(--sans);background:#faf7f0;outline:none}
+.chat-form button{width:42px;height:42px;border-radius:50%;border:none;background:#191914;color:#F7F3EB;display:grid;place-items:center;cursor:pointer;flex:none}
+.chat-form button svg{width:18px;height:18px}
+.wa-row{margin-top:.7rem;padding-top:.75rem;border-top:1px dashed rgba(25,25,20,.14);display:flex}
+.wa-order{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;background:rgba(37,211,102,.12);color:#0e7a3f;border:1px solid rgba(37,211,102,.4);border-radius:99px;padding:.55rem 1rem;font-size:.82rem;font-weight:700;text-decoration:none;font-family:var(--sans);width:100%}
+.wa-order:hover{background:rgba(37,211,102,.22)}
+.wa-order svg{width:15px;height:15px}
+.intro-card{background:#eee9dd;border-radius:14px;padding:.9rem 1rem;font-size:.84rem;color:var(--dim);line-height:1.55}
+.intro-card b{color:var(--ink)}
+.intro-card .fields{display:flex;gap:.5rem;margin-top:.7rem}
+.intro-card .fields input{flex:1;border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;font-size:.82rem;font-family:var(--sans);background:#fff;outline:none}
+.intro-card .go{width:auto;padding:.55rem .9rem;font-size:.8rem;border-radius:10px}
+@media(max-width:640px){.chat-widget{right:1rem;bottom:1rem;width:calc(100vw - 2rem)}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="#top">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9z"/><path d="M19 15.5v4M17 17.5h4"/></svg></span>
+    <span>Shop<em>Sathi</em></span>
+  </a>
+  <a class="open-console" href="app.html">Owner? Open console →</a>
+</div>
+
+<main id="main">
+  <div class="hero" id="shopHead" style="display:none">
+    <div class="h-ava" id="shopAva">?</div>
+    <div class="h-cat" id="shopCat"></div>
+    <h1 id="shopName">Loading…</h1>
+    <div class="h-tag" id="shopTag"></div>
+    <div class="h-meta" id="shopMeta"></div>
+    <div class="h-cta">
+      <button class="btn-ghost2 chat-launch" id="launchChat" style="margin-left:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Chat with us
+      </button>
+      <a class="btn-wa" id="waShop" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.8-.88-2.08-1-.28-.1-.48-.15-.68.15-.2.3-.78 1-.95 1.2-.17.2-.35.22-.65.08-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.78-1.67-2.08-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.62-.93-2.23-.24-.58-.49-.5-.67-.51h-.58c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.11.57-.08 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.08-.12-.28-.2-.58-.35zM12.05 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.85 9.85 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.9-9.88a9.83 9.83 0 0 1 9.88 9.89c0 5.45-4.44 9.88-9.89 9.88zm8.42-18.3A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.33.16 11.89c0 2.1.55 4.14 1.59 5.94L.06 24l6.33-1.66a11.9 11.9 0 0 0 5.66 1.44h.01c6.55 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.16-3.48-8.4z"/></svg>
+        WhatsApp us
+      </a>
+    </div>
+  </div>
+  <div class="section-label">Our menu &amp; products</div>
+  <div class="prod-grid" id="prodGrid"><div class="empty">Loading products…</div></div>
+</main>
+
+<footer>
+  <span>© 2026 <b>ShopSathi</b> · AI assistant for local shops</span>
+  <span id="footerShop"></span>
+</footer>
+
+<div class="chat-widget closed" id="chatWidget">
+  <div class="chat-head">
+    <span class="dot"></span>
+    <div><div class="nm" id="chatName">ShopSathi AI</div><div class="st">Usually replies instantly</div></div>
+    <button class="min" id="minChat" aria-label="Minimize">–</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-form" id="chatForm">
+    <input id="chatInput" placeholder="Type your message…" aria-label="Message">
+    <button id="chatSend" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+  </div>
+</div>
+<script>
+(function () {
+  var FN = "https://qraizrooahgggbtpqtlc.supabase.co/functions/v1/web-chat";
+  var shopId = new URLSearchParams(location.search).get("shop") || "";
+  var shopName = "";
+  var me = { name: "", phone: "" };
+  var widget = document.getElementById("chatWidget");
+  var body = document.getElementById("chatBody");
+  var input = document.getElementById("chatInput");
+
+  function money(n) { return "₹" + Number(n || 0).toLocaleString("en-IN"); }
+
+  function esc(s) { return String(s || "").replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  function addBubble(text, cls) {
+    var d = document.createElement("div");
+    d.className = "bubble " + cls;
+    d.textContent = text;
+    body.appendChild(d);
+    body.scrollTop = body.scrollHeight;
+    return d;
+  }
+  function typing() {
+    var d = document.createElement("div");
+    d.className = "typing";
+    d.innerHTML = "<i></i><i></i><i></i>";
+    body.appendChild(d);
+    body.scrollTop = body.scrollHeight;
+    return d;
+  }
+
+  var waShopNumber = "";
+
+  function waLink(text) {
+    return "https://wa.me/" + (waShopNumber ? waShopNumber.replace(/\D/g, "") : "") + "?text=" + encodeURIComponent(text);
+  }
+
+  function renderProducts(products) {
+    var grid = document.getElementById("prodGrid");
+    if (!products || !products.length) { grid.innerHTML = '<div class="empty">No products listed yet — message us to ask what is available!</div>'; return; }
+    grid.innerHTML = products.map(function (p) {
+      var eff = Number(p.price) * (1 - (Number(p.discount) || 0) / 100);
+      var badge = p.stock === 0 ? '<span class="badge out">Out of stock</span>' : (p.stock <= 5 ? '<span class="badge low">Low stock</span>' : '<span class="badge in">Available</span>');
+      var initial = esc((p.name || "?")[0]);
+      var img = p.image_url ? '<img src="' + esc(p.image_url) + '" alt="' + esc(p.name) + '" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.ph\').style.display=\'grid\'"><span class="ph" style="display:none">' + initial + "</span>" : '<span class="ph">' + initial + "</span>";
+      var out = p.stock === 0;
+      var waMsg = "Hi " + shopName + "! I'd like to order: " + p.name + (eff ? " (" + money(eff) + ")" : "");
+      return '<div class="prod">' +
+        '<div class="prod-img">' + img + badge + "</div>" +
+        '<div class="prod-body">' +
+        '<div class="p-name">' + esc(p.name) + "</div>" +
+        '<div class="p-cat">' + esc(p.category || "") + "</div>" +
+        (p.description ? '<div class="p-desc">' + esc(p.description) + "</div>" : "") +
+        '<div class="p-price">' + (Number(p.discount) > 0 ? '<span class="strike">' + money(p.price) + '</span> <b>' + money(eff) + '</b> <span class="off">-' + p.discount + "%</span>" : "<b>" + money(p.price) + "</b>") + "</div>" +
+        (waShopNumber && !out ? '<div class="wa-row"><a class="wa-order" href="' + waLink(waMsg) + '" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.8-.88-2.08-1-.28-.1-.48-.15-.68.15-.2.3-.78 1-.95 1.2-.17.2-.35.22-.65.08-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.78-1.67-2.08-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.62-.93-2.23-.24-.58-.49-.5-.67-.51h-.58c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.11.57-.08 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.08-.12-.28-.2-.58-.35zM12.05 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.85 9.85 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.9-9.88a9.83 9.83 0 0 1 9.88 9.89c0 5.45-4.44 9.88-9.89 9.88zm8.42-18.3A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.33.16 11.89c0 2.1.55 4.14 1.59 5.94L.06 24l6.33-1.66a11.9 11.9 0 0 0 5.66 1.44h.01c6.55 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.16-3.48-8.4z"/></svg> Order on WhatsApp</a></div>' : "") +
+        "</div></div>";
+    }).join("");
+  }
+
+  function showIntro() {
+    body.innerHTML = '<div class="intro-card"><b>Namaste! 👋</b> I\'m the AI assistant for this shop. Tell me your name (and phone, so the shop can reach you) and I\'ll help you — prices, stock, bookings, anything.<div class="fields"><input id="iName" placeholder="Your name" aria-label="Your name"><input id="iPhone" placeholder="Phone (optional)" aria-label="Phone"><button class="btn go" id="iGo">Start</button></div></div>';
+    document.getElementById("iGo").addEventListener("click", function () {
+      me.name = document.getElementById("iName").value.trim();
+      me.phone = document.getElementById("iPhone").value.trim();
+      if (!me.name) { addBubble("Please tell me your name so the shop knows who is asking 🙂", "sys"); return; }
+      body.innerHTML = "";
+      addBubble("Hi " + me.name + "! How can I help? Try “what are your prices?” or “book a slot tomorrow”.", "ai");
+      input.focus();
+    });
+  }
+
+  function send() {
+    var text = input.value.trim();
+    if (!text || input.disabled) return;
+    input.value = "";
+    addBubble(text, "cust");
+    input.disabled = true;
+    var t = typing();
+    fetch(FN, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shop_id: shopId, message: text, customer_name: me.name || undefined, phone: me.phone || undefined })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      t.remove();
+      input.disabled = false;
+      addBubble(d.reply || "Sorry — I couldn\'t answer that right now. The shop has been notified and will get back to you. 🙂", "ai");
+      if (d.escalated) addBubble("This one has been passed to the shop owner — they\'ll reply personally.", "sys");
+      input.focus();
+    }).catch(function () {
+      t.remove();
+      input.disabled = false;
+      addBubble("Connection issue — please try again in a moment.", "ai");
+    });
+  }
+
+  document.getElementById("chatSend").addEventListener("click", send);
+  input.addEventListener("keydown", function (e) { if (e.key === "Enter") send(); });
+  document.getElementById("minChat").addEventListener("click", function () { widget.classList.toggle("closed"); });
+  document.getElementById("launchChat").addEventListener("click", function () {
+    widget.classList.remove("closed");
+    if (!body.children.length) showIntro();
+    input.focus();
+  });
+
+  if (!shopId) {
+    document.getElementById("shopHead").style.display = "none";
+    document.getElementById("prodGrid").innerHTML = '<div class="empty">This storefront link is missing its shop. Ask the shop owner for the correct link.</div>';
+    return;
+  }
+
+  fetch(FN, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shop_id: shopId })
+  }).then(function (r) { return r.json(); }).then(function (d) {
+    if (d.error || !d.shop) {
+      document.getElementById("prodGrid").innerHTML = '<div class="empty">' + esc(d.error || "Shop not found") + "</div>";
+      return;
+    }
+    shopName = d.shop.name;
+    document.getElementById("shopName").textContent = d.shop.name;
+    document.getElementById("shopAva").textContent = (d.shop.name || "?")[0].toUpperCase();
+    document.getElementById("shopCat").textContent = d.shop.category || "";
+    document.getElementById("shopTag").textContent = d.shop.tagline || (d.shop.category ? "Order online or chat with us — we reply instantly." : "Chat with us — we reply instantly.");
+    document.getElementById("shopMeta").innerHTML =
+      (d.shop.hours ? "<span>🕒 " + esc(d.shop.hours) + "</span>" : "") +
+      (d.shop.address ? "<span>📍 " + esc(d.shop.address) + "</span>" : "") +
+      (d.shop.phone ? "<span>📞 " + esc(d.shop.phone) + "</span>" : "");
+    if (d.shop.whatsapp_number) {
+      waShopNumber = d.shop.whatsapp_number;
+      document.getElementById("waShop").setAttribute("href", waLink("Hi " + d.shop.name + "! I have a question."));
+    } else {
+      document.getElementById("waShop").style.display = "none";
+    }
+    document.getElementById("footerShop").textContent = d.shop.name;
+    document.getElementById("chatName").textContent = d.shop.name + " · AI";
+    document.getElementById("shopHead").style.display = "";
+    renderProducts(d.products);
+  }).catch(function () {
+    document.getElementById("prodGrid").innerHTML = '<div class="empty">Could not reach the shop — try again later.</div>';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /* ============================================================
-   Lantern — pages/landing.css (landing-page extras)
+   ShopSathi — pages/landing.css (landing-page extras)
    ============================================================ */
 
 .hero h1 .grad { background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -17,7 +17,85 @@
 #demo .step-badge { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem;
   font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); margin-bottom: .4rem; }
 
-.hero-stage { perspective: 1200px; }
-.phone { transform: rotateY(-8deg) rotateX(2deg); transition: transform .8s var(--ease-cine); }
-.hero-stage:hover .phone { transform: rotateY(0deg) rotateX(0deg); }
-@media (max-width: 1080px) { .phone { transform: none; } }
+/* ============================================================
+   Flowblox-style layout — nav / hero / columns / 2x2 grid
+   ============================================================ */
+
+/* ---------- Nav: left links · center brand · right CTA ---------- */
+.site-nav { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.2rem; align-items: center; }
+.site-nav .nav-links { display: flex; align-items: center; gap: 1.7rem; }
+.site-nav .nav-links a { font-size: .9rem; color: var(--text-dim); transition: color .2s; white-space: nowrap; }
+.site-nav .nav-links a:hover { color: var(--text); }
+.site-nav .nav-links.left { justify-content: flex-start; }
+.site-nav .nav-links.right { justify-content: flex-end; }
+.site-nav .brand-lockup { justify-self: center; }
+.site-nav .nav-links .btn { font-size: .86rem; padding: .62rem 1.25rem; border-radius: 99px; }
+
+/* ---------- Hero: centered ---------- */
+.hero.hero-centered { display: block; text-align: center; padding: 10rem clamp(1.2rem,5vw,3rem) 5.5rem;
+  max-width: 1200px; margin: 0 auto; }
+.hero.hero-centered h1 { margin: 1.6rem auto 1.4rem; }
+.hero.hero-centered .lede { margin: 0 auto; max-width: 34rem; }
+.hero.hero-centered .cta-row { justify-content: center; }
+.hero.hero-centered .cta-row .btn { border-radius: 99px; padding: .95rem 1.7rem; }
+
+/* ---------- Portrait arc ---------- */
+.portrait-arc { display: flex; justify-content: center; align-items: flex-start; gap: 1.05rem;
+  margin: 4.6rem auto 0; max-width: 820px; flex-wrap: wrap; }
+.p-card { width: 96px; border-radius: 22px; padding: 1.15rem .6rem .85rem; text-align: center;
+  color: #F7F3EB; box-shadow: 0 24px 60px rgba(25,25,20,.18), inset 0 1px 0 rgba(255,255,255,.18);
+  transition: transform .35s var(--ease-cine), box-shadow .35s var(--ease-cine); }
+.p-card:hover { transform: translateY(-6px) rotate(0deg) !important; box-shadow: 0 34px 70px rgba(25,25,20,.24); }
+.p-card .p-initial { display: block; font-family: var(--font-display); font-size: 2.3rem; line-height: 1; }
+.p-card .p-name { display: block; margin-top: .6rem; font-size: .66rem; font-weight: 600;
+  letter-spacing: .02em; opacity: .88; }
+.p-card.c1 { background: linear-gradient(160deg, #e76f8a, #c94b6d); transform: rotate(-8deg) translateY(16px); }
+.p-card.c2 { background: linear-gradient(160deg, #8f7ae5, #6d55d6); transform: rotate(-4deg) translateY(6px); }
+.p-card.c3 { background: linear-gradient(160deg, #f0a35a, #df7a2f); transform: rotate(0deg); }
+.p-card.c4 { background: linear-gradient(160deg, #6dbf8b, #3f9d6b); transform: rotate(3deg) translateY(4px); }
+.p-card.c5 { background: linear-gradient(160deg, #57a7d6, #2f7fb5); transform: rotate(6deg) translateY(12px); }
+.p-card.c6 { background: linear-gradient(160deg, #b08b5a, #8a6a3d); transform: rotate(9deg) translateY(22px); }
+
+/* ---------- Feature columns ---------- */
+.col-strip { max-width: 1200px; margin: 0 auto; padding: 4.2rem clamp(1.2rem,5vw,3rem) 1.5rem;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; }
+.col { background: rgba(255,255,255,.62); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.9rem; box-shadow: var(--shadow-card); }
+.col .c-ico { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center;
+  background: rgba(161,98,7,.12); color: var(--amber); margin-bottom: 1.1rem; }
+.col .c-ico.teal { background: rgba(20,140,120,.1); color: #1a8a76; }
+.col .c-ico.violet { background: rgba(139,92,246,.1); color: #7c5cf0; }
+.col .c-ico svg { width: 20px; height: 20px; }
+.col h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.32rem; margin-bottom: .55rem; }
+.col p { color: var(--text-dim); font-size: .92rem; line-height: 1.62; }
+
+/* ---------- 2x2 asymmetric feature grid ---------- */
+.feature-grid-2x2 { display: grid; grid-template-columns: 1.15fr .85fr; grid-template-rows: repeat(2, auto);
+  gap: 1.4rem; align-items: stretch; }
+.fg-card { border-radius: var(--radius-lg); padding: 2.4rem; min-height: 240px; position: relative;
+  display: flex; align-items: flex-end; overflow: hidden; }
+.fg-card h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.55rem; margin-bottom: .6rem; }
+.fg-card p { font-size: .92rem; line-height: 1.62; max-width: 36ch; opacity: .92; }
+.fg-inner { position: relative; z-index: 1; }
+.fg-img { background: linear-gradient(150deg, #2c2c22, #45453a 70%); color: #F7F3EB; }
+.fg-img::after { content: "🗣"; position: absolute; top: -1.6rem; right: -1rem; font-size: 11rem;
+  opacity: .1; transform: rotate(-8deg); }
+.fg-cream { background: #f1ebdd; color: var(--text); }
+.fg-taupe { background: #8b8174; color: #F7F3EB; }
+.fg-olive { background: #6b6f3e; color: #F7F3EB; }
+.fg-ava { position: absolute; right: 1.6rem; top: 1.6rem; width: 64px; height: 64px; border-radius: 50%;
+  display: grid; place-items: center; font-family: var(--font-display); font-size: 1.7rem; color: #F7F3EB;
+  background: linear-gradient(160deg, #e76f8a, #c94b6d); box-shadow: 0 12px 30px rgba(25,25,20,.3);
+  border: 3px solid rgba(255,255,255,.28); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .site-nav { grid-template-columns: 1fr auto; }
+  .site-nav .nav-links.left { display: none; }
+  .site-nav .nav-links.right a:not(.btn) { display: none; }
+  .col-strip { grid-template-columns: 1fr; }
+  .feature-grid-2x2 { grid-template-columns: 1fr; }
+  .portrait-arc { gap: .7rem; }
+  .p-card { width: 80px; }
+  .p-card .p-initial { font-size: 1.9rem; }
+}

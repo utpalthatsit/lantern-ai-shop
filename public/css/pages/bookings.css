@@ -1,5 +1,5 @@
 /* ============================================================
-   Lantern — pages/bookings.css
+   ShopSathi — pages/bookings.css
    ============================================================ */
 .day-strip { display: flex; gap: .7rem; overflow-x: auto; padding-bottom: .4rem; margin-bottom: 1.4rem; }
 .day-chip { flex: none; display: flex; flex-direction: column; align-items: center; gap: .2rem;
@@ -16,15 +16,15 @@
 
 .bk-timeline { display: flex; flex-direction: column; gap: .8rem; }
 .bk-card { display: flex; gap: 1rem; padding: 1.1rem 1.2rem; align-items: center; transition: border-color .25s, transform .25s; }
-.bk-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-2px); }
+.bk-card:hover { border-color: rgba(0,0,0,.18); transform: translateY(-2px); }
 .bk-card .bk-time { flex: none; width: 74px; display: flex; flex-direction: column; align-items: center; gap: .15rem; }
 .bk-card .bk-time .t { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; }
 .bk-card .bk-time .d { font-size: .7rem; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; }
-.bk-card .bk-line { flex: none; width: 2px; align-self: stretch; border-radius: 2px; background: rgba(255,255,255,.1); }
+.bk-card .bk-line { flex: none; width: 2px; align-self: stretch; border-radius: 2px; background: rgba(0,0,0,.1); }
 .bk-card.confirmed .bk-line { background: var(--teal); box-shadow: 0 0 10px rgba(63,216,192,.5); }
 .bk-card.completed .bk-line { background: var(--green); }
 .bk-card.no_show .bk-line { background: var(--danger); }
-.bk-card.cancelled .bk-line { background: rgba(255,255,255,.18); }
+.bk-card.cancelled .bk-line { background: rgba(0,0,0,.18); }
 .bk-card .bk-main { flex: 1; min-width: 0; }
 .bk-card .bk-service { font-weight: 650; font-size: .98rem; }
 .bk-card .bk-cust { font-size: .82rem; color: var(--text-dim); margin-top: 2px; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }

@@ -1,5 +1,5 @@
 /* ============================================================
-   Lantern — components/toast.js
+   ShopSathi — components/toast.js
    ============================================================ */
 import { icon } from "../utils/constants.js";
 

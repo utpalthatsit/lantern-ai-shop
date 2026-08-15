@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lantern — The AI business assistant for local shops</title>
-<meta name="description" content="Lantern answers customers, books appointments, tracks stock and writes marketing for local shops — over WhatsApp, in any language, at any hour.">
+<title>ShopSathi — The AI business assistant for local shops</title>
+<meta name="description" content="ShopSathi answers customers, books appointments, tracks stock and writes marketing for local shops — over WhatsApp, in any language, at any hour.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/layout.css">
 <link rel="stylesheet" href="css/pages/landing.css">
@@ -17,7 +17,7 @@
 <div class="letterbox" id="letterbox" aria-hidden="true">
   <div class="bar top"></div>
   <div class="bar bottom"></div>
-  <div class="brand">Lan<em>tern</em></div>
+  <div class="brand">Shop<em>Sathi</em></div>
 </div>
 <div class="grain" aria-hidden="true"></div>
 <div class="vignette" aria-hidden="true"></div>
@@ -28,75 +28,67 @@
 </div>
 
 <nav class="site-nav" id="siteNav">
-  <a class="brand-lockup" href="#top">
-    <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9z"/><path d="M19 15.5v4M17 17.5h4"/></svg></span>
-    <span>Lan<em>tern</em></span>
-  </a>
-  <div class="links">
+  <div class="nav-links left">
     <a href="#demo">How it works</a>
     <a href="#features">Features</a>
-    <a href="#stories">Stories</a>
     <a href="#pricing">Pricing</a>
   </div>
-  <div class="spacer"></div>
-  <a class="btn btn-gold" href="app.html">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
-    Open console
+  <a class="brand-lockup" href="#top">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9z"/><path d="M19 15.5v4M17 17.5h4"/></svg></span>
+    <span>Shop<em>Sathi</em></span>
   </a>
+  <div class="nav-links right">
+    <a href="#stories">Stories</a>
+    <a class="btn btn-gold" href="app.html">Get started
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
 </nav>
 
-<header class="hero" id="top">
-  <div class="hero-copy">
-    <span class="live-pill reveal in">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
-      Now in pilot with 30 shops
-    </span>
-    <h1 class="display">The AI that <span class="grad">works the counter</span>, so you can run the shop.</h1>
-    <p class="lede">Lantern answers customers, books appointments, tracks stock, and writes your marketing — over WhatsApp, in any language, at any hour. A full-time digital employee for the shop that can't afford one.</p>
-    <div class="cta-row">
-      <a class="btn btn-gold" href="app.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        See it in the console
-      </a>
-      <a class="btn btn-ghost" href="#demo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg>
-        Watch the demo
-      </a>
-    </div>
-    <div class="proof-row">
-      <div class="avatars">
-        <span class="g0">P</span><span class="g1">M</span><span class="g3">F</span><span class="g2">D</span><span class="g4">A</span>
-      </div>
-      <span>Trusted by café, barber, boutique &amp; repair-shop owners<br>saving 5+ hours a week on busywork</span>
-    </div>
+<header class="hero hero-centered" id="top">
+  <span class="live-pill reveal in">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+    Now in pilot with 30 shops
+  </span>
+  <h1 class="display">The AI that <span class="grad">works the counter</span>, so you can run the shop.</h1>
+  <p class="lede">ShopSathi answers customers, books appointments, tracks stock, and writes your marketing — over WhatsApp, in any language, at any hour. A full-time digital employee for the shop that can't afford one.</p>
+  <div class="cta-row">
+    <a class="btn btn-gold" href="app.html">
+      Get started for free
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+    <a class="btn btn-ghost" href="#demo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg>
+      Watch the demo
+    </a>
   </div>
-
-  <div class="hero-stage">
-    <div class="glow-ring"></div>
-    <div class="phone">
-      <div class="screen">
-        <div class="notch"><i></i></div>
-        <div class="chat-head">
-          <div class="shop-ava">E</div>
-          <div>
-            <div class="nm">Ember Café</div>
-            <div class="st"><span class="pulse-dot"></span> Lantern AI is online</div>
-          </div>
-        </div>
-        <div class="chat-body" id="heroChat"></div>
-        <div class="chat-input">
-          <div class="box">Message Ember Café…</div>
-          <div class="send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="scroll-cue">
-    <span>Scroll</span>
-    <div class="line"></div>
+  <div class="portrait-arc" aria-hidden="true">
+    <div class="p-card c1"><span class="p-initial">P</span><span class="p-name">Priya · Café</span></div>
+    <div class="p-card c2"><span class="p-initial">M</span><span class="p-name">Marcus · Barber</span></div>
+    <div class="p-card c3"><span class="p-initial">F</span><span class="p-name">Fatima · Boutique</span></div>
+    <div class="p-card c4"><span class="p-initial">D</span><span class="p-name">Diego · Repairs</span></div>
+    <div class="p-card c5"><span class="p-initial">R</span><span class="p-name">Ritu · Bakery</span></div>
+    <div class="p-card c6"><span class="p-initial">A</span><span class="p-name">Anil · Grocer</span></div>
   </div>
 </header>
+
+<section class="col-strip">
+  <article class="col reveal">
+    <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+    <h3>Answers customers, 24/7</h3>
+    <p>Hours, prices, stock and directions — answered instantly on WhatsApp, in the customer's own language, even while you sleep.</p>
+  </article>
+  <article class="col reveal" style="--d:.08s">
+    <span class="c-ico teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+    <h3>Bookings that don't ghost</h3>
+    <p>Appointments taken, reminders sent, no-shows rebooked — so your chairs and tables stay full, not your voicemail.</p>
+  </article>
+  <article class="col reveal" style="--d:.16s">
+    <span class="c-ico violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
+    <h3>Insights in plain language</h3>
+    <p>Every morning: "Your best day was Saturday; iced coffee outsold everything 3-to-1." No spreadsheets, no dashboards to learn.</p>
+  </article>
+</section>
 
 <div class="ticker marquee" aria-hidden="true">
   <div class="track">
@@ -110,21 +102,21 @@
 <section class="section demo-stage" id="demo">
   <div class="section-head reveal">
     <span class="eyebrow">How it works</span>
-    <h2 class="display">A customer walks in. <em>Lantern's already talking to them.</em></h2>
+    <h2 class="display">A customer walks in. <em>ShopSathi's already talking to them.</em></h2>
     <p>Watch a real exchange on the shop's WhatsApp — the assistant answers, books, and only hands over when a human touch matters.</p>
   </div>
 
   <div class="demo-window card hairline reveal">
     <div class="win-bar">
       <i></i><i></i><i></i>
-      <span class="title">Ember Café · WhatsApp Business · Lantern AI</span>
+      <span class="title">Ember Café · WhatsApp Business · ShopSathi AI</span>
     </div>
     <div class="win-body">
       <div class="conv-list" id="demoConvList"></div>
       <div class="conv-thread">
         <div class="thread-body" id="demoThread"></div>
         <div class="thread-input">
-          <input class="input" placeholder="Reply as Lantern… (demo)">
+          <input class="input" placeholder="Reply as ShopSathi… (demo)">
           <button class="send-btn" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
         </div>
       </div>
@@ -132,7 +124,7 @@
   </div>
 
   <div class="demo-captions">
-    <div class="cap reveal"><span class="num">01</span><p>Ritu writes in Hinglish during the lunch rush. Lantern understands the language — and the context.</p></div>
+    <div class="cap reveal"><span class="num">01</span><p>Ritu writes in Hinglish during the lunch rush. ShopSathi understands the language — and the context.</p></div>
     <div class="cap reveal" style="--d:.12s"><span class="num">02</span><p>The assistant confirms the order, takes payment details, and writes it to your inventory in one breath.</p></div>
     <div class="cap reveal" style="--d:.24s"><span class="num">03</span><p>Only the tricky request — a refund — gets escalated to your phone, with the full thread attached.</p></div>
   </div>
@@ -140,40 +132,35 @@
 
 <section class="section" id="features">
   <div class="section-head reveal">
-    <span class="eyebrow">What it does</span>
-    <h2 class="display">Everything admin. <em>Nothing busywork.</em></h2>
-    <p>Six tools, one conversation. No dashboards to learn, no manuals — you just talk to it.</p>
+    <span class="eyebrow">Everything it does</span>
+    <h2 class="display">Everything your shop needs <em>to work smarter</em></h2>
+    <p>From answering to inventory to marketing — one assistant keeps your shop connected, organised, and moving forward. Together.</p>
   </div>
-  <div class="feature-grid">
-    <article class="card feature-card reveal">
-      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-      <h3>Answers customers, 24/7</h3>
-      <p>Hours, prices, stock, directions — answered instantly on WhatsApp, Instagram DM, SMS or your web widget, in the customer's own language.</p>
+  <div class="feature-grid-2x2">
+    <article class="fg-card fg-img reveal">
+      <div class="fg-inner">
+        <h3>Multilingual by default</h3>
+        <p>Hinglish, Tamil, Spanish, Arabic — your customers write in their language, ShopSathi answers in it. It's core, not a feature.</p>
+      </div>
     </article>
-    <article class="card feature-card reveal" style="--d:.08s">
-      <div class="f-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
-      <h3>Bookings that don't ghost</h3>
-      <p>Takes appointments, sends reminders, catches no-shows and rebooks them — so Marcus stops chasing empty chairs.</p>
+    <article class="fg-card fg-cream reveal" style="--d:.08s">
+      <div class="fg-inner">
+        <h3>Marketing drafts itself</h3>
+        <p>Captions, WhatsApp broadcasts, promos for slow Tuesdays — drafted and ready for your one-tap approval. Never sent without you.</p>
+      </div>
     </article>
-    <article class="card feature-card reveal" style="--d:.16s">
-      <div class="f-icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg></div>
-      <h3>Inventory that talks back</h3>
-      <p>"Sold 3 red shirts, size M." That's the whole update. Lantern tracks stock, flags low levels, and tells you what's flying.</p>
+    <article class="fg-card fg-taupe reveal">
+      <div class="fg-inner">
+        <h3>Inventory that talks back</h3>
+        <p>"Sold 3 red shirts, size M." That's the whole update. Stock tracked, low levels flagged, flying items called out.</p>
+      </div>
     </article>
-    <article class="card feature-card reveal">
-      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></div>
-      <h3>Insights in plain language</h3>
-      <p>No spreadsheets. Every morning: "Your best day was Saturday; iced coffee outsold everything 3-to-1."</p>
-    </article>
-    <article class="card feature-card reveal" style="--d:.08s">
-      <div class="f-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9z"/><path d="M19 15.5v4M17 17.5h4"/></svg></div>
-      <h3>Marketing drafts itself</h3>
-      <p>Captions, WhatsApp broadcasts, promos for slow Tuesdays — drafted, ready for your one-tap approval. Never sent without you.</p>
-    </article>
-    <article class="card feature-card reveal" style="--d:.16s">
-      <div class="f-icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-      <h3>Multilingual by default</h3>
-      <p>Hinglish, Tamil, Spanish, Arabic — your customers write in their language, Lantern answers in it. It's core, not a feature.</p>
+    <article class="fg-card fg-olive reveal" style="--d:.08s">
+      <div class="fg-inner">
+        <h3>Human handover, on purpose</h3>
+        <p>The assistant handles what it's sure about — and hands the tricky stuff to you, with the full thread attached.</p>
+      </div>
+      <span class="fg-ava">P</span>
     </article>
   </div>
 </section>
@@ -190,7 +177,7 @@
         <span class="p-ava g0">P</span>
         <div><div class="p-name">Priya</div><div class="p-shop">Ember Café · 2-person team</div></div>
       </div>
-      <p class="p-quote">"I used to lose orders in the lunch rush. Now Lantern takes them while I pour coffee. It's like hiring someone for ₹12,000."</p>
+      <p class="p-quote">"I used to lose orders in the lunch rush. Now ShopSathi takes them while I pour coffee. It's like hiring someone for ₹12,000."</p>
       <div class="p-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 6 hrs saved a week</div>
     </article>
     <article class="card persona-card reveal" style="--d:.08s">
@@ -214,7 +201,7 @@
         <span class="p-ava g2">D</span>
         <div><div class="p-name">Diego</div><div class="p-shop">Fix-It Dock · repair shop</div></div>
       </div>
-      <p class="p-quote">"Customers used to call all day asking 'is it ready?' Now Lantern tells them the status. I just fix phones."</p>
+      <p class="p-quote">"Customers used to call all day asking 'is it ready?' Now ShopSathi tells them the status. I just fix phones."</p>
       <div class="p-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 40 calls a day avoided</div>
     </article>
   </div>
@@ -228,7 +215,7 @@
 </div>
 
 <div class="quote-band">
-  <blockquote class="display reveal">"My customers think I hired a second person. I just switched on Lantern."</blockquote>
+  <blockquote class="display reveal">"My customers think I hired a second person. I just switched on ShopSathi."</blockquote>
   <div class="who reveal"><b>Priya Sharma</b> · Ember Café, Pune</div>
   <div class="logo-row reveal">
     <span>Ember Café</span><span>Fade &amp; Co</span><span>Loom &amp; Leaf</span><span>Fix-It Dock</span><span>Corner Store</span>
@@ -239,7 +226,7 @@
   <div class="section-head reveal">
     <span class="eyebrow">Pricing</span>
     <h2 class="display">Less than a part-time hire. <em>More than a chatbot.</em></h2>
-    <p>Start free. Pay only when Lantern is actually saving you hours.</p>
+    <p>Start free. Pay only when ShopSathi is actually saving you hours.</p>
   </div>
   <div class="price-grid">
     <article class="card price-card reveal">
@@ -285,7 +272,7 @@
     <div class="blob blob-1" style="top:-10vw;left:30vw;opacity:.5"></div>
   </div>
   <span class="eyebrow reveal" style="justify-content:center">Your first reply is minutes away</span>
-  <h2 class="display big reveal">Bring a lantern <em>behind your counter.</em></h2>
+  <h2 class="display big reveal">Bring <em>ShopSathi</em> behind your counter.</h2>
   <p class="reveal">Set up in 10 minutes. No manuals, no training, no IT. If it doesn't save you time in the first month, we'll make it right.</p>
   <form class="cta-form reveal" onsubmit="event.preventDefault(); location.href='app.html';">
     <input class="input" type="tel" placeholder="+91 · your WhatsApp number" aria-label="WhatsApp number">
@@ -299,7 +286,7 @@
 <footer class="site-footer">
   <a class="brand-lockup" href="#top">
     <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9z"/></svg></span>
-    <span>Lan<em>tern</em></span>
+    <span>Shop<em>Sathi</em></span>
   </a>
   <div class="cols">
     <a href="#features">Features</a>
@@ -307,8 +294,7 @@
     <a href="app.html">Console</a>
     <a href="#">Privacy</a>
     <a href="#">Terms</a>
-  </div>
-  <span>© 2026 Lantern · Made for the people behind the counter</span>
+  </div>    <span>© 2026 ShopSathi · Made for the people behind the counter</span>
 </footer>
 
 <script type="module" src="js/main.js"></script>

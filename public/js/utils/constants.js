@@ -1,5 +1,5 @@
 /* ============================================================
-   Lantern — utils/constants.js (icons, colors, labels)
+   ShopSathi — utils/constants.js (icons, colors, labels)
    ============================================================ */
 
 const STROKE = 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
@@ -23,6 +23,7 @@ export const ICONS = {
   trash: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>`,
   arrowUp: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M12 19V5M5 12l7-7 7 7"/></svg>`,
   arrowDown: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M12 5v14M19 12l-7 7-7-7"/></svg>`,
+  arrowLeft: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M19 12H5M12 19l-7-7 7-7"/></svg>`,
   zap: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>`,
   globe: `<svg viewBox="0 0 24 24" ${STROKE}><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
   shield: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
@@ -58,3 +59,32 @@ export function avatarFor(name, g = null) {
 /* Currency + number helpers live in formatters.js */
 export const SHOP_TYPES = ["Café", "Barbershop", "Boutique", "Repair Shop", "Grocery", "Salon"];
 export const LANGUAGES = ["English", "हिन्दी", "Español", "العربية", "தமிழ்", "Tagalog"];
+
+/* ---------- ShopSathi extra icons ---------- */
+const EXTRA = {
+  image: `<svg viewBox="0 0 24 24" ${STROKE}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`,
+  mapPin: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  mail: `<svg viewBox="0 0 24 24" ${STROKE}><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>`,
+  userPlus: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M17 11h6"/></svg>`,
+  filter: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>`,
+  sort: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M11 5h10M11 9h7M11 13h4M3 17l3 3 3-3M6 18V4"/></svg>`,
+  bag: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>`,
+  shieldCheck: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
+  package: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M16.5 9.4 7.55 4.24M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg>`,
+  messagePlus: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v6M9 11h6"/></svg>`,
+  receipt: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>`,
+  tag: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 2.8 12V4a1.2 1.2 0 0 1 1.2-1.2H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1"/></svg>`,
+  external: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>`,
+  link: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>`,
+  copy: `<svg viewBox="0 0 24 24" ${STROKE}><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+  messageCircle: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>`,
+};
+Object.assign(ICONS, EXTRA);
+
+/* extra (eye) */
+Object.assign(ICONS, {
+  eye: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  eyeOff: `<svg viewBox="0 0 24 24" ${STROKE}><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="m1 1 22 22"/></svg>`,
+  calendarPlus: `<svg viewBox="0 0 24 24" ${STROKE}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 14v6M9 17h6"/></svg>`,
+  refreshCwExtra: ``,
+});
