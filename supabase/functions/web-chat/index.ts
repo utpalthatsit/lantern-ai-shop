@@ -35,9 +35,10 @@ Deno.serve(async (req) => {
     if (!shop) return json({ error: "Shop not found" }, 404);
 
     const message = String(body?.message || "").trim().slice(0, 4000);
+    const action = String(body?.action || "");
 
-    // ---- Storefront request: shop info + active products (no message) ----
-    if (!message) {
+    // ---- Storefront request: shop info + active products (no message, no action) ----
+    if (!message && !action) {
       const { data: products } = await supabase.from("products")
         .select("id, name, description, category, price, discount, stock, image_url")
         .eq("shop_id", shopId).eq("active", true).order("name", { ascending: true });
@@ -50,6 +51,84 @@ Deno.serve(async (req) => {
         },
         products: products || [],
       });
+    }
+
+    // ---- Storefront actions: lookup / reviews / rate / sync (no AI round) ----
+    if (action === "lookup") {
+      const phone = String(body?.phone || "").trim();
+      if (!/^\+?[0-9]{6,15}$/.test(phone.replace(/[\s-]/g, ""))) {
+        return json({ error: "Enter a valid phone number" }, 400);
+      }
+      const { data: customer } = await supabase.from("customers")
+        .select("id, name, phone").eq("shop_id", shop.id).eq("phone", phone).maybeSingle();
+      const { data: orders } = await supabase.from("orders")
+        .select("id, customer_name, status, total, created_at")
+        .eq("shop_id", shop.id).eq("customer_phone", phone)
+        .order("created_at", { ascending: false }).limit(20);
+      const { data: ratings } = await supabase.from("ratings")
+        .select("id, order_id, rating, comment, created_at")
+        .eq("shop_id", shop.id).eq("customer_phone", phone)
+        .order("created_at", { ascending: false }).limit(10);
+      return json({ customer, orders: orders || [], ratings: ratings || [] });
+    }
+
+    if (action === "reviews") {
+      const { data: list } = await supabase.from("ratings")
+        .select("customer_name, rating, comment, created_at")
+        .eq("shop_id", shop.id).order("created_at", { ascending: false }).limit(8);
+      const all = list || [];
+      const average = all.length
+        ? Math.round((all.reduce((s, r) => s + r.rating, 0) / all.length) * 10) / 10
+        : 0;
+      return json({ average, count: all.length, reviews: all });
+    }
+
+    if (action === "rate") {
+      const phone = String(body?.phone || "").trim();
+      const orderId = String(body?.order_id || "");
+      const rating = Number(body?.rating);
+      const comment = String(body?.comment || "").trim().slice(0, 500);
+      const name = String(body?.customer_name || "").trim();
+      if (!phone) return json({ error: "Phone is required to rate" }, 400);
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        return json({ error: "Rating must be between 1 and 5 stars" }, 400);
+      }
+      if (!isUuid(orderId)) return json({ error: "Invalid order" }, 400);
+      const { data: order } = await supabase.from("orders")
+        .select("id, customer_name").eq("id", orderId).eq("shop_id", shop.id)
+        .eq("customer_phone", phone).maybeSingle();
+      if (!order) return json({ error: "Order not found for this phone" }, 404);
+      const { error } = await supabase.from("ratings").upsert({
+        shop_id: shop.id, order_id: order.id, customer_phone: phone,
+        customer_name: name || order.customer_name || null,
+        rating, comment: comment || null,
+      }, { onConflict: "order_id, customer_phone" });
+      if (error) {
+        console.error("[web-chat] rate upsert", error.message);
+        return json({ error: "Could not save rating" }, 500);
+      }
+      return json({ ok: true, rated: rating });
+    }
+
+    if (action === "sync") {
+      const phone = String(body?.phone || "").trim();
+      const conversationId = String(body?.conversation_id || "");
+      let convId = isUuid(conversationId) ? conversationId : null;
+      if (!convId && phone) {
+        const { data: conv } = await supabase.from("conversations")
+          .select("id").eq("shop_id", shop.id).eq("customer_phone", phone).maybeSingle();
+        convId = conv?.id || null;
+      }
+      if (!convId) return json({ conversation_id: null, status: null, messages: [] });
+      const { data: conv } = await supabase.from("conversations")
+        .select("status").eq("id", convId).eq("shop_id", shop.id).maybeSingle();
+      if (!conv) return json({ conversation_id: null, status: null, messages: [] });
+      let q = supabase.from("messages").select("id, sender, content, created_at")
+        .eq("conversation_id", convId).order("created_at", { ascending: true });
+      const after = String(body?.after || "");
+      if (after) q = q.gt("created_at", after);
+      const { data: msgs } = await q;
+      return json({ conversation_id: convId, status: conv.status, messages: msgs || [] });
     }
 
     // ---- Chat request ----

@@ -160,6 +160,8 @@ ld Brew"></div>
       <div class="row">
         <div class="field" style="width:150px"><label>Price * (₹)</label><input class="input" id="p-price" type="number" step="0.01" min="0" value="${isEdit ? product.price : ""}" placeholder="190"></div>
         <div class="field" style="width:130px"><label>Discount %</label><input class="input" id="p-disc" type="number" step="1" min="0" max="100" value="${isEdit ? product.discount || 0 : 0}"></div>
+        <div class="field" style="width:110px"><label>GST %</label>
+          <select class="select" id="p-gst">${[0, 5, 12, 18, 28].map((r) => `<option value="${r}" ${isEdit && Number(product.gst_rate) === r ? "selected" : ""}>${r}%</option>`).join("")}</select></div>
         <div class="field grow"><label>Stock *</label><input class="input" id="p-stock" type="number" min="0" step="1" value="${isEdit ? product.stock : ""}" placeholder="10"></div>
       </div>
       <div class="row">
@@ -188,6 +190,7 @@ ld Brew"></div>
           sku: scrim.querySelector("#p-sku").value.trim() || null,
           price: Number(price),
           discount: Number(disc),
+          gst_rate: Number(scrim.querySelector("#p-gst").value || 0),
           stock: Number(stock),
           low_stock_threshold: Number(thresh),
           image_url: scrim.querySelector("#p-img").value.trim() || null,

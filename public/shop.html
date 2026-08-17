@@ -90,6 +90,29 @@ footer{border-top:1px solid var(--border);padding:1.4rem clamp(1rem,4vw,2.5rem);
 .intro-card .fields input{flex:1;border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;font-size:.82rem;font-family:var(--sans);background:#fff;outline:none}
 .intro-card .go{width:auto;padding:.55rem .9rem;font-size:.8rem;border-radius:10px}
 @media(max-width:640px){.chat-widget{right:1rem;bottom:1rem;width:calc(100vw - 2rem)}}
+.stars{display:inline-flex;gap:.1rem;align-items:center}
+.star{width:22px;height:22px;border:none;background:none;cursor:pointer;color:#d8d2c2;font-size:1.05rem;line-height:1;padding:0;transition:transform .12s}
+.star.on{color:#e8a33d}
+.star:hover{transform:scale(1.25)}
+.order-chip{display:flex;justify-content:space-between;gap:.6rem;align-items:center;background:#fff;border:1px solid var(--border);border-radius:12px;padding:.55rem .7rem;font-size:.8rem;margin-top:.35rem}
+.order-chip .oc-total{font-weight:700;white-space:nowrap}
+.order-chip .oc-meta{font-size:.7rem;color:var(--faint);margin-top:1px}
+.rate-card{background:#fff;border:1px solid rgba(37,211,102,.35);border-radius:14px;padding:.7rem .8rem;margin-top:.35rem}
+.rate-card .rc-title{font-weight:700;font-size:.85rem;margin-bottom:.3rem}
+.rate-card .rc-sub{font-size:.74rem;color:var(--dim);margin-bottom:.4rem}
+.quick-chip{display:inline-flex;align-items:center;gap:.3rem;border:1px solid var(--border);background:#fff;border-radius:99px;padding:.4rem .8rem;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--ink);margin-top:.5rem}
+.quick-chip:hover{border-color:var(--amber)}
+.reviews{margin-top:2.2rem}
+.reviews h2{font-family:var(--serif);font-size:1.6rem;margin-bottom:.4rem}
+.reviews .rev-avg{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.reviews .rev-avg .big{font-size:1.5rem;font-weight:700;font-family:var(--serif)}
+.reviews .rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.8rem}
+.review-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.8rem .9rem}
+.review-card .rc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}
+.review-card .rc-name{font-weight:700;font-size:.85rem}
+.review-card .rc-stars{color:#e8a33d;font-size:.85rem;letter-spacing:1px}
+.review-card .rc-body{font-size:.8rem;color:var(--dim);line-height:1.5}
+.review-card .rc-when{font-size:.68rem;color:var(--faint);margin-top:.4rem}
 </style>
 </head>
 <body>
@@ -121,6 +144,7 @@ footer{border-top:1px solid var(--border);padding:1.4rem clamp(1rem,4vw,2.5rem);
   </div>
   <div class="section-label">Our menu &amp; products</div>
   <div class="prod-grid" id="prodGrid"><div class="empty">Loading products…</div></div>
+  <div class="reviews" id="reviewsSec" style="display:none"></div>
 </main>
 
 <footer>
@@ -201,16 +225,170 @@ footer{border-top:1px solid var(--border);padding:1.4rem clamp(1rem,4vw,2.5rem);
 
   function showIntro() {
     body.innerHTML = '<div class="intro-card"><b>Namaste! 👋</b> I\'m the AI assistant for this shop. Tell me your name (and phone, so the shop can reach you) and I\'ll help you — prices, stock, bookings, anything.<div class="fields"><input id="iName" placeholder="Your name" aria-label="Your name"><input id="iPhone" placeholder="Phone (optional)" aria-label="Phone"><button class="btn go" id="iGo">Start</button></div></div>';
-    document.getElementById("iGo").addEventListener("click", function () {
+        document.getElementById("iGo").addEventListener("click", function () {
       me.name = document.getElementById("iName").value.trim();
       me.phone = document.getElementById("iPhone").value.trim();
       if (!me.name) { addBubble("Please tell me your name so the shop knows who is asking 🙂", "sys"); return; }
       body.innerHTML = "";
-      addBubble("Hi " + me.name + "! How can I help? Try “what are your prices?” or “book a slot tomorrow”.", "ai");
-      input.focus();
+      addBubble("Hi " + me.name + "! 👋", "ai");
+      if (me.phone) {
+        lookupOrders(me.phone).then(function (d) {
+          if (!d.error && d.orders && d.orders.length) {
+            showPastOrders(d);
+          } else {
+            addBubble("How can I help? Try “what are your prices?” or “book a slot tomorrow”.", "ai");
+          }
+          addMyOrdersChip();
+          input.focus();
+        }).catch(function () {
+          addBubble("How can I help? Try “what are your prices?” or “book a slot tomorrow”.", "ai");
+          addMyOrdersChip();
+          input.focus();
+        });
+      } else {
+        addBubble("How can I help? Try “what are your prices?” or “book a slot tomorrow”. Tip: add your phone number and I will show your past orders.", "ai");
+        addMyOrdersChip();
+        input.focus();
+      }
+    });
+
+  }
+
+  function starsHtml(n) {
+    var s = "";
+    for (var i = 1; i <= 5; i++) s += '<span class="star' + (i <= n ? " on" : "") + '">★</span>';
+    return s;
+  }
+
+  function shortDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  }
+
+  function lookupOrders(phone) {
+    return fetch(FN, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shop_id: shopId, action: "lookup", phone: phone })
+    }).then(function (r) { return r.json(); });
+  }
+
+  function rateOrder(orderId, rating) {
+    var card = document.querySelector('.rate-card[data-order="' + orderId + '"]');
+    if (card) card.style.opacity = "0.6";
+    return fetch(FN, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shop_id: shopId, action: "rate", order_id: orderId, phone: me.phone, customer_name: me.name, rating: rating })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.ok) {
+        if (card) card.innerHTML = '<div class="rc-sub">Thanks! You rated this order ' + starsHtml(rating) + '</div>';
+        loadReviews();
+      } else {
+        addBubble("Could not save your rating - " + (d.error || "try again") + ".", "sys");
+      }
+    }).catch(function () {
+      addBubble("Could not save your rating - check your connection.", "sys");
     });
   }
 
+  function showPastOrders(data) {
+    var orders = data.orders || [];
+    var ratings = data.ratings || [];
+    if (!orders.length) {
+      addBubble("I could not find any past orders for " + me.phone + ". Ready to place a new one? 🙂", "ai");
+      return;
+    }
+    var rated = {};
+    ratings.forEach(function (r) { if (r.order_id) rated[r.order_id] = r.rating; });
+    addBubble("Welcome back" + (me.name ? ", " + me.name : "") + "! 👋 I found " + orders.length + " past order" + (orders.length > 1 ? "s" : "") + " on this number:", "ai");
+    orders.slice(0, 5).forEach(function (o) {
+      addBubble("🛍️ " + shortDate(o.created_at) + " - " + money(o.total) + " - " + o.status, "cust");
+      if (rated[o.id]) {
+        addBubble("Your rating: " + starsHtml(rated[o.id]), "ai");
+      } else if (o.status === "completed") {
+        var card = document.createElement("div");
+        card.className = "rate-card";
+        card.dataset.order = o.id;
+        card.innerHTML = '<div class="rc-title">Rate this order</div>' +
+          '<div class="rc-sub">How was your experience?</div>' +
+          '<div class="stars">' +
+          [1, 2, 3, 4, 5].map(function (n) {
+            return '<button class="star" data-rate="' + n + '" aria-label="' + n + ' stars">★</button>';
+          }).join("") + '</div>';
+        card.querySelectorAll("[data-rate]").forEach(function (b) {
+          b.addEventListener("click", function () { rateOrder(o.id, Number(b.dataset.rate)); });
+        });
+        body.appendChild(card);
+        body.scrollTop = body.scrollHeight;
+      }
+    });
+    addBubble("Anything else? I can help with prices, bookings or a new order.", "ai");
+  }
+
+  function addMyOrdersChip() {
+    var chip = document.createElement("button");
+    chip.className = "quick-chip";
+    chip.textContent = "🔁 See my past orders";
+    chip.addEventListener("click", function () {
+      if (me.phone) {
+        body.innerHTML = "";
+        lookupOrders(me.phone).then(function (d) { showPastOrders(d); input.focus(); });
+      } else {
+        addBubble("Please add your phone number so I can find your past orders.", "sys");
+        showIntro();
+      }
+    });
+    body.appendChild(chip);
+  }
+
+  function loadReviews() {
+    fetch(FN, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shop_id: shopId, action: "reviews" })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var sec = document.getElementById("reviewsSec");
+      if (!sec || d.error || !d.reviews || !d.reviews.length) return;
+      sec.innerHTML = '<h2>What customers say</h2>' +
+        '<div class="rev-avg"><span class="big">' + d.average.toFixed(1) + '</span>' + starsHtml(Math.round(d.average)) + '<span class="faint">(' + d.count + ' review' + (d.count > 1 ? "s" : "") + ')</span></div>' +
+        '<div class="rev-grid">' + d.reviews.map(function (r) {
+          return '<div class="review-card"><div class="rc-head"><span class="rc-name">' + esc(r.customer_name || "Customer") + '</span><span class="rc-stars">' + starsHtml(r.rating) + '</span></div>' +
+            (r.comment ? '<div class="rc-body">' + esc(r.comment) + "</div>" : "") +
+            '<div class="rc-when">' + shortDate(r.created_at) + '</div></div>';
+        }).join("") + '</div>';
+      sec.style.display = "";
+    }).catch(function () {});
+  }
+
+  function startSync() {
+    if (window._syncTimer) return;
+    window._syncTimer = setInterval(syncMsgs, 8000);
+    syncMsgs();
+  }
+  function syncMsgs() {
+    if (!me.convId && !me.phone) return;
+    var p = { shop_id: shopId, action: "sync" };
+    if (me.convId) p.conversation_id = me.convId;
+    if (me.phone) p.phone = me.phone;
+    if (me.lastMsgAt) p.after = me.lastMsgAt;
+    fetch(FN, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(p) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d || !d.messages || !d.messages.length) {
+          if (d && d.status === "escalated" && !me.escalatedShown) { me.escalatedShown = true; addBubble("This one has been passed to the shop owner — they'll reply personally.", "sys"); }
+          return;
+        }
+        if (d.conversation_id) me.convId = d.conversation_id;
+        d.messages.forEach(function (m) {
+          if (m.sender === "owner") addBubble(m.content, "owner");
+          me.lastMsgAt = m.created_at;
+        });
+        if (d.status === "escalated" && !me.escalatedShown) { me.escalatedShown = true; addBubble("This one has been passed to the shop owner — they'll reply personally.", "sys"); }
+      })
+      .catch(function () {});
+  }
   function send() {
     var text = input.value.trim();
     if (!text || input.disabled) return;
@@ -226,7 +404,9 @@ footer{border-top:1px solid var(--border);padding:1.4rem clamp(1rem,4vw,2.5rem);
       t.remove();
       input.disabled = false;
       addBubble(d.reply || "Sorry — I couldn\'t answer that right now. The shop has been notified and will get back to you. 🙂", "ai");
-      if (d.escalated) addBubble("This one has been passed to the shop owner — they\'ll reply personally.", "sys");
+      if (d.conversation_id) me.convId = d.conversation_id;
+      if (d.escalated && !me.escalatedShown) { me.escalatedShown = true; addBubble("This one has been passed to the shop owner — they'll reply personally.", "sys"); }
+      startSync();
       input.focus();
     }).catch(function () {
       t.remove();
@@ -278,6 +458,7 @@ footer{border-top:1px solid var(--border);padding:1.4rem clamp(1rem,4vw,2.5rem);
     document.getElementById("chatName").textContent = d.shop.name + " · AI";
     document.getElementById("shopHead").style.display = "";
     renderProducts(d.products);
+    loadReviews();
   }).catch(function () {
     document.getElementById("prodGrid").innerHTML = '<div class="empty">Could not reach the shop — try again later.</div>';
   });

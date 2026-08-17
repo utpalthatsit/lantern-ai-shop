@@ -1,0 +1,89 @@
+/* ============================================================
+   ShopSathi — pages/billing.css
+   Billing page: GST invoice builder + voice input + printable
+   invoice. Reuses global tokens (.card, .field, .input, …).
+   ============================================================ */
+
+.bill-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1.2rem; align-items: start; }
+@media (max-width: 980px) { .bill-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Voice ---------- */
+.voice-strip { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.mic-btn { border-color: rgba(37,211,102,.45); color: #0e7a3f; background: rgba(37,211,102,.08); }
+.mic-btn:hover { background: rgba(37,211,102,.16); }
+.mic-btn.mic-live, .mic-mini.mic-live {
+  background: #25d366 !important; color: #062b1a !important;
+  animation: mic-pulse 1.1s ease-in-out infinite;
+}
+@keyframes mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,.45); }
+  50% { box-shadow: 0 0 0 9px rgba(37,211,102,0); }
+}
+.mic-field { display: flex; align-items: center; gap: .4rem; }
+.mic-field .input { flex: 1; min-width: 0; }
+.mic-mini { border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); border-radius: 10px; flex: none; }
+.mic-mini:hover { color: #0e7a3f; border-color: rgba(37,211,102,.5); }
+
+/* ---------- Line items ---------- */
+.bill-lines-wrap { overflow-x: auto; padding-bottom: .2rem; }
+.bill-col-head, .b-line {
+  display: grid; grid-template-columns: minmax(0, 1fr) 62px 92px 74px 92px 30px;
+  gap: .5rem; align-items: center; min-width: 640px;
+}
+.bill-col-head { padding: 0 .15rem .35rem; font-size: .68rem; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.bh-prod { grid-column: 1; } .bh-qty { grid-column: 2; } .bh-price { grid-column: 3; }
+.bh-gst { grid-column: 4; } .bh-total { grid-column: 5; text-align: right; } .bh-rm { grid-column: 6; }
+.b-line .input, .b-line .select { width: 100%; min-width: 0; }
+.b-line .b-qty, .b-line .b-price { text-align: right; }
+.b-line-total { text-align: right; font-weight: 650; font-size: .9rem; white-space: nowrap; }
+#bLines .b-line { border-bottom: 1px dashed var(--border); padding-bottom: .5rem; }
+#bLines .b-line:last-child { border-bottom: none; }
+
+/* ---------- Discount + summary ---------- */
+.discount-row { display: flex; align-items: center; gap: .6rem; }
+.sum-row { display: flex; justify-content: space-between; align-items: baseline;
+  padding: .26rem 0; font-size: .9rem; }
+.sum-row.grand { border-top: 1px dashed var(--border); margin-top: .35rem; padding-top: .6rem;
+  font-weight: 750; font-size: 1.08rem; }
+.sum-row span:last-child { font-variant-numeric: tabular-nums; }
+
+/* ---------- Recent bills ---------- */
+.bill-row { display: flex; justify-content: space-between; align-items: center; gap: .7rem;
+  padding: .7rem 0; border-bottom: 1px solid var(--border); }
+.bill-row:last-child { border-bottom: none; }
+.bill-row .r-title { font-weight: 650; font-size: .9rem; }
+.bill-row .r-sub { font-size: .74rem; color: var(--text-faint); margin-top: 1px; }
+.bill-row .r-total { font-weight: 750; font-variant-numeric: tabular-nums; }
+
+/* ---------- Printable invoice ---------- */
+.bill-print { font-family: var(--sans, system-ui, sans-serif); color: #191914; }
+.bp-head { display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 1rem; padding-bottom: .8rem; border-bottom: 2px solid #191914; margin-bottom: .9rem; }
+.bp-shop { font-size: 1.25rem; font-weight: 800; letter-spacing: .01em; }
+.bp-invno { font-size: 1.02rem; font-weight: 800; text-align: right; }
+.bp-meta { font-size: .78rem; color: #5d5747; margin-top: 2px; }
+.bp-right { text-align: right; }
+.bp-billto { margin-bottom: .9rem; }
+.bp-label { font-size: .66rem; font-weight: 800; letter-spacing: .12em; color: #8a8372; }
+.bp-cust { font-weight: 700; font-size: 1rem; margin-top: 2px; }
+.bp-table { width: 100%; border-collapse: collapse; font-size: .82rem; margin-bottom: .9rem; }
+.bp-table th { text-align: left; font-size: .66rem; text-transform: uppercase; letter-spacing: .08em;
+  color: #8a8372; border-bottom: 1px solid #191914; padding: .35rem .4rem; }
+.bp-table td { padding: .4rem; border-bottom: 1px solid rgba(25,25,20,.12); }
+.bp-table .r, .bp-table th.r { text-align: right; }
+.bp-totals { max-width: 280px; margin-left: auto; }
+.bp-row { display: flex; justify-content: space-between; padding: .2rem 0; font-size: .82rem; }
+.bp-row.bp-grand { border-top: 1.5px solid #191914; margin-top: .3rem; padding-top: .5rem;
+  font-weight: 800; font-size: 1rem; }
+.bp-foot { margin-top: 1.1rem; font-size: .78rem; color: #5d5747; text-align: center;
+  border-top: 1px dashed rgba(25,25,20,.3); padding-top: .7rem; }
+
+/* ---------- Print ---------- */
+@media print {
+  body * { visibility: hidden !important; }
+  .bill-print, .bill-print * { visibility: visible !important; }
+  .bill-print { position: fixed !important; left: 0; top: 0; width: 100%; background: #fff !important; }
+  .modal-scrim, .modal { background: none !important; }
+  .modal-scrim { padding: 0 !important; overflow: visible !important; }
+}

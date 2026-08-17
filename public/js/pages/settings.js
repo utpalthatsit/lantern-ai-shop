@@ -52,6 +52,7 @@ export async function render(root) {
             </div>
             <div class="field"><label>Tagline (shows on your storefront)</label><input class="input" id="s-tagline" value="${esc(shop.tagline || "")}" placeholder="Fresh coffee & warm smiles since 2015"></div>
             <div class="field"><label>Address</label><input class="input" id="s-addr" value="${esc(shop.address || "")}"></div>
+            <div class="field"><label>GSTIN <span class="faint small">(printed on invoices)</span></label><input class="input" id="s-gstin" value="${esc(shop.gstin || "")}" placeholder="e.g. 27ABCDE1234F1Z5"></div>
             <div class="field"><label>Opening hours (plain text)</label><input class="input" id="s-hours" value="${esc(hoursText)}" placeholder="Mon–Sat 8:00–21:00, Sun 9:00–17:00"></div>
             <button class="btn btn-gold" id="saveShopBtn" style="align-self:flex-start">${icon("check")} Save shop</button>
           </div>
@@ -120,6 +121,7 @@ export async function render(root) {
           phone: body.querySelector("#s-phone").value.trim() || null,
           whatsapp_number: body.querySelector("#s-wa").value.trim() || null,
           address: body.querySelector("#s-addr").value.trim() || null,
+          gstin: body.querySelector("#s-gstin").value.trim() || null,
           tagline: body.querySelector("#s-tagline").value.trim() || null,
           hours: { note: body.querySelector("#s-hours").value.trim() },
         });

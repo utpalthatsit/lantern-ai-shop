@@ -19,9 +19,10 @@ export async function render(root) {
 
   try {
     const shop = getShop();
-    const [productsList, customersList, ordersList, bookingsList, convs, notifs, logs] = await Promise.all([
+    const [productsList, customersList, ordersList, bookingsList, convs, notifs, logs, ratings] = await Promise.all([
       db.products(), db.customers(), db.orders(), db.bookings(), db.conversations(), db.notifications(8),
       db.aiLogs(200).catch(() => []),
+      db.ratings(12).catch(() => []),
     ]);
 
     const today = new Date().toISOString().slice(0, 10);
@@ -32,6 +33,10 @@ export async function render(root) {
     const pendingBookings = (bookingsList || []).filter((b) => b.status === "pending");
     const unreadNotifs = (notifs || []).filter((n) => !n.read);
     const aiToday = (logs || []).filter((l) => (l.created_at || "").slice(0, 10) === today).length;
+    const ratingAvg = (ratings || []).length
+      ? Math.round(((ratings || []).reduce((s, r) => s + r.rating, 0) / ratings.length) * 10) / 10 : 0;
+
+    const stars = (n) => "★".repeat(n) + "☆".repeat(5 - n);
 
     const stat = (label, value, ico, sub = "") => `
       <div class="card stat-card">
@@ -82,6 +87,19 @@ export async function render(root) {
                 </span>
                 <span class="r-right">${statusBadge(o.status)}</span>
               </div>`).join("") || emptyState("bag", "No orders yet", "Orders appear here once customers place them.")}
+          </div>
+        </div>
+
+        <div class="card panel">
+          <div class="panel-head"><h3>Customer ratings</h3><div class="spacer"></div>${ratings.length ? `<span class="small" style="color:var(--amber)">★ ${ratingAvg.toFixed(1)} · ${ratings.length}</span>` : ""}</div>
+          <div class="panel-body" style="padding:0">
+            ${(ratings || []).slice(0, 6).map((r) => `
+              <div class="row-item">
+                <span class="r-main">
+                  <div class="r-title">${esc(r.customer_name || "Customer")} <span style="color:#e8a33d">${stars(r.rating)}</span></div>
+                  <div class="r-sub">${esc(r.comment || "—")} · ${relativeTime(r.created_at)}</div>
+                </span>
+              </div>`).join("") || emptyState("sparkle", "No ratings yet", "Customer ratings from the storefront appear here.")}
           </div>
         </div>
 

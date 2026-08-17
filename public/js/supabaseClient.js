@@ -205,6 +205,74 @@ export const db = {
     return data;
   },
 
+  /* ---------- Billing (GST invoices) ---------- */
+  async bills(limit = 20) {
+    let q = supabase.from("orders").select("*, order_items(*)").eq("shop_id", shopId())
+      .not("invoice_no", "is", null).order("created_at", { ascending: false });
+    const { data, error } = await q.limit(limit);
+    if (error) throw error;
+    return data || [];
+  },
+
+  /* A bill is a completed order with full GST math already applied.
+     Stock is decremented by the existing order_items trigger. */
+  async createBill({ customer_name, customer_phone, customer_gstin, items, subtotal, discount_amount, tax_amount, total, notes }) {
+    if (!customer_name) throw new Error("Customer name is required");
+    if (!Array.isArray(items) || !items.length) throw new Error("Add at least one product");
+    for (const it of items) {
+      if (!it.product_id) throw new Error('"' + it.name + '" is not in your catalog — add it on the Products page first');
+      const qty = Number(it.quantity);
+      if (!Number.isInteger(qty) || qty < 1) throw new Error("Quantities must be positive whole numbers");
+      if (!(Number(it.price) >= 0)) throw new Error('"' + it.name + '" needs a valid rate');
+    }
+
+    const year = new Date().getFullYear();
+    const { count } = await supabase.from("orders").select("*", { count: "exact", head: true })
+      .eq("shop_id", shopId()).not("invoice_no", "is", null);
+    const invoice_no = 'INV-' + year + '-' + String((count || 0) + 1).padStart(4, "0");
+
+    const { data: order, error } = await supabase.from("orders").insert({
+      shop_id: shopId(),
+      customer_name, customer_phone: customer_phone || null, customer_gstin: customer_gstin || null,
+      status: "completed", total,
+      subtotal, discount_amount, tax_amount, invoice_no,
+      notes: notes || null,
+    }).select().single();
+    if (error) throw error;
+
+    const { error: itemsErr } = await supabase.from("order_items").insert(
+      items.map((r) => ({
+        order_id: order.id, product_id: r.product_id, name: r.name,
+        price: Math.round(Number(r.price) * 100) / 100,
+        quantity: Number(r.quantity), gst_rate: Number(r.gst_rate) || 0,
+      })),
+    );
+    if (itemsErr) throw itemsErr;
+
+    /* Keep customers in sync — a bill often creates/updates one. */
+    if (customer_phone) {
+      const { data: existing } = await supabase.from("customers")
+        .select("id").eq("shop_id", shopId()).eq("phone", customer_phone).maybeSingle();
+      if (existing) {
+        await supabase.from("customers").update({ name: customer_name, gstin: customer_gstin || null })
+          .eq("id", existing.id);
+      } else {
+        await supabase.from("customers").insert({
+          shop_id: shopId(), name: customer_name, phone: customer_phone, gstin: customer_gstin || null,
+        });
+      }
+    }
+    return { ...order, items: items.map((r) => ({ ...r, order_id: order.id })) };
+  },
+
+  /* ---------- Ratings ---------- */
+  async ratings(limit = 12) {
+    const { data, error } = await supabase.from("ratings")
+      .select("*").eq("shop_id", shopId()).order("created_at", { ascending: false }).limit(limit);
+    if (error) throw error;
+    return data || [];
+  },
+
   /* ---------- Bookings ---------- */
   async bookings(opts = {}) {
     let q = supabase.from("bookings").select("*").eq("shop_id", shopId())

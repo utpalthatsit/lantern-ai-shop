@@ -13,6 +13,7 @@ import * as products from "./pages/products.js";
 import * as inventory from "./pages/inventory.js";
 import * as customers from "./pages/customers.js";
 import * as orders from "./pages/orders.js";
+import * as billing from "./pages/billing.js";
 import * as bookings from "./pages/bookings.js";
 import * as conversations from "./pages/conversations.js";
 import * as aiAssistant from "./pages/aiAssistant.js";
@@ -130,6 +131,7 @@ const TABS = {
   inventory:   { title: "Inventory",      sub: "Stock levels, history & low-stock alerts",  init: inventory.init,   bind: inventory.bind,   render: inventory.render },
   customers:   { title: "Customers",      sub: "Who shops with you",                        init: customers.init,   bind: customers.bind,   render: customers.render },
   orders:      { title: "Orders",         sub: "Everything your customers ordered",         init: orders.init,      bind: orders.bind,      render: orders.render },
+  billing:     { title: "Billing",        sub: "GST invoices — type or just speak",             init: billing.init,     bind: billing.bind,     render: billing.render },
   bookings:    { title: "Bookings",       sub: "Appointments & reminders",                  init: bookings.init,    bind: bookings.bind,    render: bookings.render },
   conversations: { title: "Conversations", sub: "Live WhatsApp & web chat",                init: conversations.init, bind: conversations.bind, render: conversations.render },
   ai:          { title: "AI Assistant",   sub: "Ask ShopSathi anything about your shop",    init: aiAssistant.init, bind: aiAssistant.bind, render: aiAssistant.render },

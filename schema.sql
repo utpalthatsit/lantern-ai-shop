@@ -759,3 +759,57 @@ returns setof uuid language sql stable security definer set search_path = public
   union
   select id from public.shops where owner_id = auth.uid();
 $$;
+
+-- >>> supabase/migrations/0007_billing_gst.sql <<<
+-- ============================================================
+-- 0007_billing_gst.sql — GST billing fields
+-- ============================================================
+
+alter table public.products
+  add column if not exists gst_rate numeric(4,2) not null default 0
+  check (gst_rate >= 0 and gst_rate <= 100);
+
+alter table public.shops
+  add column if not exists gstin text;
+
+alter table public.customers
+  add column if not exists gstin text;
+
+alter table public.orders
+  add column if not exists invoice_no text,
+  add column if not exists subtotal numeric(10,2) not null default 0,
+  add column if not exists discount_amount numeric(10,2) not null default 0,
+  add column if not exists tax_amount numeric(10,2) not null default 0,
+  add column if not exists gstin text,
+  add column if not exists customer_gstin text;
+
+alter table public.order_items
+  add column if not exists gst_rate numeric(4,2) not null default 0;
+
+create index if not exists orders_shop_invoice_idx on public.orders (shop_id, invoice_no);
+
+-- >>> supabase/migrations/0008_ratings.sql <<<
+-- ============================================================
+-- 0008_ratings.sql — customer ratings
+-- ============================================================
+
+create table if not exists public.ratings (
+  id uuid primary key default gen_random_uuid(),
+  shop_id uuid not null references public.shops(id) on delete cascade,
+  order_id uuid references public.orders(id) on delete set null,
+  customer_phone text,
+  customer_name text,
+  rating integer not null check (rating >= 1 and rating <= 5),
+  comment text,
+  created_at timestamptz not null default now(),
+  unique (order_id, customer_phone)
+);
+
+alter table public.ratings enable row level security;
+
+create index if not exists ratings_shop_created_idx on public.ratings (shop_id, created_at desc);
+
+create policy "owners read ratings" on public.ratings
+  for select using (
+    shop_id in (select public.my_shop_ids())
+  );

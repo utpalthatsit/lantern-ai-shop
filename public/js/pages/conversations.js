@@ -90,7 +90,7 @@ async function openThread(root, id) {
     </div>
     ${conv.status === "escalated"
       ? `<button class="btn-soft btn" id="resolveBtn" style="padding:.45rem .9rem;font-size:.8rem">${icon("check")} Mark handled</button>`
-      : `<span class="badge teal"><span class="badge-dot"></span>${conv.status === "closed" ? "Closed" : "AI handled"}</span>`}`;
+      : `<button class="btn-soft btn" id="takeoverBtn" style="padding:.45rem .9rem;font-size:.8rem">${icon("chatEscalate")} Take over</button>`}`;
 
   const scroll = root.querySelector("#threadScroll");
   scroll.innerHTML = loadingState("Loading messages…");
@@ -112,10 +112,18 @@ async function openThread(root, id) {
     render(root);
   });
 
-  root.querySelector("#resolveBtn")?.addEventListener("click", async () => {
+    root.querySelector("#resolveBtn")?.addEventListener("click", async () => {
     await db.setConversationStatus(id, "closed");
     toast({ title: "Marked handled", body: "The thread is closed — the customer can still write back.", tone: "green", iconName: "checkCircle" });
-    render(root);
+    list = await db.conversations();
+    openThread(root, id);
+  });
+
+  root.querySelector("#takeoverBtn")?.addEventListener("click", async () => {
+    await db.setConversationStatus(id, "escalated");
+    toast({ title: "You're handling this chat now", body: "The AI won't auto-reply here — reply to the customer directly.", tone: "green", iconName: "checkCircle" });
+    list = await db.conversations();
+    openThread(root, id);
   });
 
   bindInput(root, conv);

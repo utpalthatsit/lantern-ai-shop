@@ -11,7 +11,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { handleOptions, json, corsHeaders } from "../_shared/cors.ts";
 import { authedUserId, canAccessShop, isUuid, adminClient } from "../_shared/shopAuth.ts";
-import { pickAIProvider, requestModel, pushAssistantTurn, pushToolResults, modelName } from "../_shared/ai.ts";
+import { requestModelWithFallback, pushAssistantTurn, pushToolResults, modelName } from "../_shared/ai.ts";
 
 const MAX_TOOL_ROUNDS = 5;
 
@@ -440,16 +440,11 @@ async function runClaude(
   system: string,
   history: { role: "user" | "assistant"; content: string }[],
 ): Promise<{ reply: string; escalated: boolean; toolsUsed: string[] }> {
-  const provider = pickAIProvider();
-  if (!provider) {
-    return { reply: "", escalated: true, toolsUsed: [] };
-  }
-
   const messages: any[] = history.map((h) => ({ role: h.role, content: h.content }));
   const toolsUsed: string[] = [];
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-    const reply = await requestModel(provider, system, messages, TOOLS, 1024);
+    const { reply, provider } = await requestModelWithFallback(system, messages, TOOLS, 1024);
     if (!reply.toolCalls.length) {
       return { reply: (reply.text || "").trim(), escalated: false, toolsUsed };
     }
@@ -501,7 +496,7 @@ Rules:
 1. Reply warmly and briefly, in the customer's language. Hinglish is fine.
 2. ONLY use your tools to learn real facts. Never invent prices, stock, hours, bookings or orders. If a tool says something, trust it; otherwise say you will check.
 3. Never reveal another customer's private data. You may only look up the requesting customer's orders/bookings using their phone number.
-4. If a request needs human judgement (refunds, complaints, unusual discounts, anything risky or unknown), call escalate_to_owner instead of guessing.
+4. If a request needs human judgement (refunds, complaints, unusual discounts, anything risky or unknown), call escalate_to_owner instead of guessing. NEVER claim you escalated, that the owner was notified, or that the owner will reply unless you actually called escalate_to_owner in this same turn — otherwise just answer what you can.
 5. To book: use create_booking. Ask for anything missing (phone, service, time) before creating. Confirm with details after.
 6. To order: use create_order with exact product names and quantities. Check availability first.
 7. Do not promise WhatsApp payment links, discounts, or anything outside your tools.
@@ -607,6 +602,13 @@ Deno.serve(async (req) => {
         .select("*").eq("id", conversationId).eq("shop_id", shopId).maybeSingle();
       if (!conv) return json({ error: "Conversation not found" }, 404);
       convPhone = conv.customer_phone || null;
+      if (conv.status === "escalated") {
+        if (persist) {
+          await persistExchange(supabase, shopId, conversationId, sender, message, "", true,
+            "Customer sent a new message while the conversation is with the owner.");
+        }
+        return json({ reply: "", action: "escalated", conversation_id: conversationId, escalated: true });
+      }
       const { data: msgs } = await supabase.from("messages")
         .select("sender, content").eq("conversation_id", conversationId)
         .order("created_at", { ascending: true }).limit(30);
