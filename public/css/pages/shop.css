@@ -105,6 +105,15 @@
 .check-row { display: flex; align-items: center; gap: .6rem; font-size: .9rem; cursor: pointer;
   padding: .5rem 0; color: var(--text-dim); }
 .check-row input { width: 18px; height: 18px; accent-color: var(--amber); }
+.wa-status { display: grid; gap: .45rem; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 12px; padding: .8rem .9rem; }
+.wa-row2 { display: flex; align-items: center; gap: .5rem; font-size: .84rem; color: var(--text-dim); }
+.wa-row2 b { font-size: .95rem; }
+.wa-steps summary { cursor: pointer; color: var(--text-dim); font-size: .85rem; font-weight: 600; }
+.wa-steps li { font-size: .83rem; color: var(--text-dim); line-height: 1.6; margin-bottom: .4rem; }
+.wa-steps code, .wa-steps pre { font-size: .78rem; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: .2rem .45rem; }
+
 
 /* ---------- Misc ---------- */
 .prof-cols { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }

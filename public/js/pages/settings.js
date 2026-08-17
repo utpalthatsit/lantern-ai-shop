@@ -72,8 +72,39 @@ export async function render(root) {
             </div>
             <button class="btn btn-gold" id="savePrefsBtn" style="align-self:flex-start">${icon("check")} Save preferences</button>
             <div class="divider"></div>
-            <p class="faint small">WhatsApp status: <b>${settings?.whatsapp_enabled ? "enabled" : "disabled"}</b>. Enable it once your WhatsApp Business Cloud API number is connected — see the README.</p>
+            <p class="faint small">WhatsApp delivery: <b id="waQuickStatus">${settings?.whatsapp_enabled ? "enabled" : "disabled"}</b>. Owner replies go to the customer's WhatsApp when this is on — see the <b>WhatsApp delivery</b> card below.</p>
           </div>
+        </div>
+      </div>
+
+      <div class="card panel" style="margin-top:1.2rem">
+        <div class="panel-head"><h3>${icon("messageCircle")} WhatsApp delivery</h3></div>
+        <div class="panel-body stack">
+          <p class="muted small">Owner replies and AI answers are sent to the customer's WhatsApp number. This needs the WhatsApp Business Cloud API from Meta — saving the shop number alone isn't enough.</p>
+          <div id="waStatus" class="wa-status"><span class="faint small">Checking setup…</span></div>
+          <label class="check-row"><input type="checkbox" id="s-wa-enable" disabled> Enable WhatsApp delivery (owner replies + AI answers go out on WhatsApp)</label>
+          <p class="faint small" id="waHint"></p>
+          <div class="divider"></div>
+          <p class="muted small"><b>Connect your own WhatsApp number</b> — paste the credentials from your Meta WhatsApp app (API Setup screen). Every shop on ShopSathi uses its own number.</p>
+          <div class="row">
+            <div class="field grow"><label>Phone number ID</label><input class="input" id="s-wa-pnid" value="${esc(settings?.wa_phone_number_id || "")}" placeholder="e.g. 123456789012345"></div>
+            <div class="field grow"><label>Verify token</label><input class="input" id="s-wa-verify" value="${esc(settings?.wa_verify_token || "")}" placeholder="your random webhook string"></div>
+          </div>
+          <div class="row">
+            <div class="field grow"><label>Access token</label><input class="input" id="s-wa-token" type="password" value="${esc(settings?.wa_token || "")}" placeholder="Meta permanent access token"></div>
+            <div class="field grow"><label>App secret</label><input class="input" id="s-wa-appsecret" type="password" value="${esc(settings?.wa_app_secret || "")}" placeholder="App settings → Basic"></div>
+          </div>
+          <button class="btn btn-gold" id="saveWaCredsBtn" style="align-self:flex-start">${icon("check")} Save WhatsApp credentials</button>
+          <details class="wa-steps">
+            <summary>${icon("helpCircle")} How to connect WhatsApp (about 5 minutes)</summary>
+            <ol class="stack" style="padding-left:1.1rem;margin:.5rem 0 0">
+              <li>Open <a href="https://developers.facebook.com" target="_blank" rel="noopener">developers.facebook.com</a> → <b>Create App</b> → add the <b>WhatsApp</b> product → follow the steps to get a test number, a permanent access token, the phone number ID and the app secret (App settings → Basic).</li>
+              <li>Paste those values into the <b>4 fields above</b> → click <b>Save WhatsApp credentials</b>. (Every shop connects its own number — no server setup needed.)</li>
+              <li>In the Meta dashboard → your app → <b>WhatsApp → Configuration → Webhook</b>, subscribe to <b>messages</b> and set:<br>Callback URL: <code>https://qraizrooahgggbtpqtlc.supabase.co/functions/v1/whatsapp-webhook</code><br>Verify token: the same <b>Verify token</b> you saved above.</li>
+              <li>Make sure the WhatsApp number above matches the number Meta gives you (E.164 format, e.g. <code>+919876543210</code>).</li>
+              <li>Come back here, reload, and tick <b>Enable WhatsApp delivery</b>. Then message your WhatsApp number to test.</li>
+            </ol>
+          </details>
         </div>
       </div>
 
@@ -143,6 +174,86 @@ export async function render(root) {
         toast({ title: "Preferences saved", body: "The assistant follows these from now on.", tone: "green", iconName: "checkCircle" });
       } catch (e) {
         toast({ title: "Could not save", body: e.message, tone: "rose", iconName: "alert" });
+      }
+    });
+
+    const waStatusEl = body.querySelector("#waStatus");
+    const waRow = body.querySelector("#s-wa-enable");
+    const waHint = body.querySelector("#waHint");
+    const setWaStatus = (html) => { if (waStatusEl) waStatusEl.innerHTML = html; };
+    const renderWaStatus = (st) => {
+      const num = shop.whatsapp_number || st?.whatsapp_number || "";
+      const ok = (b) => `<b style="color:${b ? "#2e8b57" : "#c0392b"}">${b ? "✓" : "✗"}</b>`;
+      const rows = [
+        `<div class="wa-row2"><span>1. WhatsApp number saved on the shop</span> ${ok(!!num)}${num ? ` <span class="faint small">(${esc(num)})</span>` : ""}</div>`,
+        `<div class="wa-row2"><span>2. Meta credentials configured on the server</span> ${ok(!!st?.credentials_configured)}</div>`,
+        `<div class="wa-row2"><span>3. Webhook connected (incoming WhatsApp messages)</span> ${ok(!!st?.webhook_configured)}</div>`,
+        `<div class="wa-row2"><span>4. Delivery enabled</span> ${ok(!!st?.enabled)}</div>`,
+      ].join("");
+      setWaStatus(rows);
+      if (waRow && waHint) {
+        const creds = !!st?.credentials_configured;
+        const ready = !!num && creds;
+        waRow.disabled = !ready;
+        waRow.checked = !!st?.enabled;
+        const row = waRow.closest(".check-row");
+        row.style.opacity = ready ? "1" : ".45";
+        row.style.pointerEvents = ready ? "auto" : "none";
+        waHint.innerHTML = !num
+          ? "Step 1 pending — save your WhatsApp number in the shop profile above."
+          : !creds
+            ? "Step 2 pending — paste your WhatsApp credentials below and save, then reload to unlock the toggle."
+            : !st?.webhook_configured
+              ? "Tip: delivery (outgoing) will work, but customers can't start a WhatsApp chat until the webhook is connected (step 3)."
+              : "";
+      }
+    };
+    (async () => {
+      try {
+        const { data: sess } = await supabase.auth.getSession();
+        const token = sess?.session?.access_token || "";
+        const res = await fetch(window.SUPABASE_CONFIG.url + "/functions/v1/whatsapp-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify({ shop_id: shop.id }),
+        });
+        const st = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(st?.error || res.status);
+        renderWaStatus(st);
+      } catch (e) {
+        setWaStatus(`<span class="faint small">Could not check the server setup: ${esc(e.message || e)}</span>`);
+      }
+    })();
+    body.querySelector("#saveWaCredsBtn").addEventListener("click", async () => {
+      try {
+        await db.saveSettings({
+          wa_token: body.querySelector("#s-wa-token").value.trim() || null,
+          wa_phone_number_id: body.querySelector("#s-wa-pnid").value.trim() || null,
+          wa_app_secret: body.querySelector("#s-wa-appsecret").value.trim() || null,
+          wa_verify_token: body.querySelector("#s-wa-verify").value.trim() || null,
+        });
+        toast({ title: "WhatsApp credentials saved", body: "Reloading the setup check…", tone: "green", iconName: "checkCircle" });
+        render(root);
+      } catch (e) {
+        toast({ title: "Could not save", body: e.message, tone: "rose", iconName: "alert" });
+      }
+    });
+
+    waRow?.addEventListener("change", async () => {
+      const on = waRow.checked;
+      try {
+        await db.saveSettings({ whatsapp_enabled: on });
+        const qs = document.getElementById("waQuickStatus");
+        if (qs) qs.textContent = on ? "enabled" : "disabled";
+        toast({
+          title: on ? "WhatsApp delivery enabled" : "WhatsApp delivery disabled",
+          body: on ? "Owner replies will now be sent over WhatsApp." : "Replies are stored but not sent over WhatsApp.",
+          tone: on ? "green" : "gold",
+          iconName: on ? "checkCircle" : "alert",
+        });
+      } catch (e) {
+        toast({ title: "Could not update", body: e.message, tone: "rose", iconName: "alert" });
+        waRow.checked = !on;
       }
     });
 

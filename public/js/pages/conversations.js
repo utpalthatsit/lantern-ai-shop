@@ -46,11 +46,12 @@ export async function render(root) {
     listEl.innerHTML = list.map((c) => {
       const av = avatarFor(c.customer_name || c.customer_phone || "?", (c.customer_phone || "0").length % 6);
       const preview = c.last_message || "No messages yet";
+      const isWeb = !c.customer_phone || String(c.customer_phone).startsWith("web-");
       return `
       <div class="conv-item ${c.id === activeId ? "active" : ""}" data-conv="${c.id}">
         <span class="ava sm ${av.cls}">${av.initial}</span>
         <div class="c-txt">
-          <div class="c-nm"><b>${esc(c.customer_name || c.customer_phone || "Customer")}</b><time>${relativeTime(c.last_message_at)}</time></div>
+          <div class="c-nm"><b>${esc(c.customer_name || c.customer_phone || "Customer")}</b><span class="chan-tag ${isWeb ? "web" : "wa"}">${isWeb ? "web" : "WA"}</span><time>${relativeTime(c.last_message_at)}</time></div>
           <div class="c-prev"><span>${esc(preview)}</span>${c.owner_unread ? `<span class="unread-dot"></span>` : ""}</div>
           ${c.status === "escalated" ? `<div class="faint small" style="color:var(--rose)">${icon("chatEscalate")} needs you</div>` : ""}
         </div>
@@ -81,13 +82,20 @@ async function openThread(root, id) {
   root.querySelectorAll(".conv-item").forEach((el) => el.classList.toggle("active", el.dataset.conv === id));
   const av = avatarFor(conv.customer_name || conv.customer_phone || "?", (conv.customer_phone || "0").length % 6);
   const head = root.querySelector("#threadHead");
+  const shop = getShop();
+  const isWeb = !conv.customer_phone || String(conv.customer_phone).startsWith("web-");
+  const waPhone = isWeb ? "" : String(conv.customer_phone).replace(/[^+\d]/g, "");
+  const waHref = waPhone
+    ? "https://wa.me/" + encodeURIComponent(waPhone) + "?text=" + encodeURIComponent("Hello " + (conv.customer_name || "") + "! " + (shop?.name || "Here") + " —")
+    : "";
   head.innerHTML = `
     <button class="btn-icon" id="backToList" aria-label="Back to conversations" title="Back" style="flex:none">${icon("arrowLeft")}</button>
     <span class="ava ${av.cls}">${av.initial}</span>
     <div class="t-info">
       <div class="t-name">${esc(conv.customer_name || conv.customer_phone || "Customer")}</div>
-      <div class="t-meta">${conv.customer_phone ? esc(maskPhone(conv.customer_phone)) : ""}${conv.status === "escalated" ? ` · <span class="escalate-tag">${icon("chatEscalate")} needs you</span>` : ""}</div>
+      <div class="t-meta">${isWeb ? "Web chat — replies appear in their storefront chat window" : esc(maskPhone(conv.customer_phone))}${conv.status === "escalated" ? ` · <span class="escalate-tag">${icon("chatEscalate")} needs you</span>` : ""}</div>
     </div>
+    ${waHref ? `<a class="btn-soft btn wa-me" href="${waHref}" target="_blank" rel="noopener" title="Open WhatsApp to message this customer from your phone">${icon("messageCircle")} WhatsApp</a>` : ""}
     ${conv.status === "escalated"
       ? `<button class="btn-soft btn" id="resolveBtn" style="padding:.45rem .9rem;font-size:.8rem">${icon("check")} Mark handled</button>`
       : `<button class="btn-soft btn" id="takeoverBtn" style="padding:.45rem .9rem;font-size:.8rem">${icon("chatEscalate")} Take over</button>`}`;
@@ -146,7 +154,8 @@ function bindInput(root, conv) {
       if (res?.delivered) {
         toast({ title: "Message delivered", body: "Sent to the customer on WhatsApp.", tone: "green", iconName: "checkCircle" });
       } else {
-        toast({ title: "Saved, not delivered", body: res?.delivery_error || "WhatsApp isn't configured — the reply is stored.", tone: "gold", iconName: "alert" });
+        const why = res?.delivery_error || "WhatsApp isn't configured — the reply is stored.";
+        toast({ title: "Saved, not delivered", body: why + " Fix it in Settings → WhatsApp delivery.", tone: "gold", iconName: "alert" });
       }
       render(root);
     } catch (e) {

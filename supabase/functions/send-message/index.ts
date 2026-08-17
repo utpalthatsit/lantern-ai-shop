@@ -2,7 +2,9 @@
 // send-message — the owner replies to a customer.
 // Called from the owner console with the user's JWT.
 // Stores the message in the DB, then delivers it over WhatsApp
-// when the shop has WhatsApp enabled. Reports delivery honestly.
+// using the SHOP's own credentials (wa_token / wa_phone_number_id
+// from settings, with platform-level env fallback). Reports
+// delivery honestly.
 // ============================================================
 import { handleOptions, json } from "../_shared/cors.ts";
 import { authedUserId, canAccessShop, isUuid, adminClient } from "../_shared/shopAuth.ts";
@@ -36,13 +38,16 @@ Deno.serve(async (req) => {
     });
     if (insertErr) return json({ error: "Could not save the message" }, 500);
 
-    const { data: settings } = await supabase.from("settings").select("*").eq("shop_id", conv.shop_id).maybeSingle();
+    const { data: settings } = await supabase.from("settings")
+      .select("whatsapp_enabled, wa_token, wa_phone_number_id").eq("shop_id", conv.shop_id).maybeSingle();
     const { data: shop } = await supabase.from("shops").select("whatsapp_number").eq("id", conv.shop_id).single();
+
+    // Per-shop credentials with platform-level fallback.
+    const token = settings?.wa_token || Deno.env.get("WHATSAPP_TOKEN") || "";
+    const phoneNumberId = settings?.wa_phone_number_id || Deno.env.get("WHATSAPP_PHONE_NUMBER_ID") || "";
 
     let delivered = false;
     let deliveryError: string | null = null;
-    const token = Deno.env.get("WHATSAPP_TOKEN");
-    const phoneNumberId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
     if (settings?.whatsapp_enabled && token && phoneNumberId && conv.customer_phone) {
       const res = await fetch(`${WA_GRAPH}/${phoneNumberId}/messages`, {
         method: "POST",
@@ -59,7 +64,9 @@ Deno.serve(async (req) => {
     } else if (!settings?.whatsapp_enabled) {
       deliveryError = "WhatsApp delivery is disabled for this shop.";
     } else if (!token || !phoneNumberId) {
-      deliveryError = "WhatsApp is not configured on the server.";
+      deliveryError = "WhatsApp is not configured — add your credentials in Settings → WhatsApp delivery.";
+    } else if (!conv.customer_phone) {
+      deliveryError = "This customer has no phone number — reply appears in their web chat.";
     }
 
     return json({ ok: true, delivered, delivery_error: deliveryError, shop_whatsapp_number: shop?.whatsapp_number || null });

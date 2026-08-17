@@ -1,10 +1,12 @@
 // ============================================================
 // whatsapp-webhook — ShopSathi's WhatsApp Business Cloud API entry.
-// 1. GET  → webhook verification handshake
-// 2. POST → HMAC signature check → find shop by WhatsApp number
-//    → find/create customer + conversation → delegate to
-//    ai-chat-handler (which persists messages + applies tools)
-//    → send the reply back through the WhatsApp API.
+// MULTI-TENANT: every shop connects its OWN WhatsApp number.
+// 1. GET  → webhook verification handshake (shop found by its
+//           wa_verify_token; falls back to the platform token)
+// 2. POST → HMAC check (shop's wa_app_secret) → find shop by
+//    display_phone_number → find/create customer + conversation
+//    → delegate to ai-chat-handler → reply via the SHOP's
+//    credentials (wa_token / wa_phone_number_id, env fallback).
 // Delivery is only reported when the WhatsApp API accepts it.
 // ============================================================
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -24,12 +26,19 @@ async function verifySignature(secret: string, body: string, signature: string):
   }
 }
 
-async function sendWhatsApp(phoneNumberId: string, to: string, text: string): Promise<{ ok: boolean; status?: number; error?: string }> {
-  const token = Deno.env.get("WHATSAPP_TOKEN");
-  if (!token || !phoneNumberId) return { ok: false, error: "WHATSAPP_TOKEN not configured" };
-  const res = await fetch(`${WA_GRAPH}/${phoneNumberId}/messages`, {
+// Per-shop credentials with platform-level fallback.
+function shopCreds(settings: any) {
+  return {
+    token: settings?.wa_token || Deno.env.get("WHATSAPP_TOKEN") || "",
+    phoneNumberId: settings?.wa_phone_number_id || Deno.env.get("WHATSAPP_PHONE_NUMBER_ID") || "",
+  };
+}
+
+async function sendWhatsApp(creds: { token: string; phoneNumberId: string }, to: string, text: string): Promise<{ ok: boolean; status?: number; error?: string }> {
+  if (!creds.token || !creds.phoneNumberId) return { ok: false, error: "WhatsApp not configured for this shop" };
+  const res = await fetch(`${WA_GRAPH}/${creds.phoneNumberId}/messages`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    headers: { Authorization: `Bearer ${creds.token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       messaging_product: "whatsapp",
       to,
@@ -56,7 +65,6 @@ async function handleIncoming(supabase: any, entry: any) {
   const value = entry?.changes?.[0]?.value;
   const msg = value?.messages?.[0];
   const metadata = value?.metadata || {};
-  const phoneNumberId = metadata.phone_number_id;
   const shopNumber = metadata.display_phone_number;
   const from = msg?.from;
 
@@ -65,14 +73,17 @@ async function handleIncoming(supabase: any, entry: any) {
 
   // Find the shop by its WhatsApp number.
   const { data: shop } = await supabase.from("shops")
-    .select("*").eq("whatsapp_number", shopNumber).maybeSingle();
+    .select("*, settings!inner(wa_token, wa_phone_number_id, wa_app_secret, wa_verify_token)")
+    .eq("whatsapp_number", shopNumber).maybeSingle();
   if (!shop) {
     console.error("[webhook] no shop for", shopNumber);
     return;
   }
+  const settings = shop.settings || null;
+  const creds = shopCreds(settings);
 
   if (rateLimited(from)) {
-    await sendWhatsApp(phoneNumberId, from, "You're messaging too quickly — please give me a moment and try again. 🙂");
+    await sendWhatsApp(creds, from, "You're messaging too quickly — please give me a moment and try again. 🙂");
     return;
   }
 
@@ -120,7 +131,7 @@ async function handleIncoming(supabase: any, entry: any) {
   let reply = aiBody.reply || "";
   let delivered = false;
   if (reply) {
-    const res = await sendWhatsApp(phoneNumberId, from, reply);
+    const res = await sendWhatsApp(creds, from, reply);
     delivered = res.ok;
     if (!res.ok) {
       console.error("[webhook] WhatsApp send failed", res.status, res.error);
@@ -136,25 +147,42 @@ async function handleIncoming(supabase: any, entry: any) {
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
+  const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-  // Verification handshake.
+  // Verification handshake: resolve the shop by its wa_verify_token.
   if (req.method === "GET") {
     const mode = url.searchParams.get("hub.mode");
     const token = url.searchParams.get("hub.verify_token");
     const challenge = url.searchParams.get("hub.challenge");
-    if (mode === "subscribe" && token === Deno.env.get("WHATSAPP_VERIFY_TOKEN")) {
-      return new Response(challenge, { status: 200 });
+    if (mode === "subscribe" && token) {
+      if (token === Deno.env.get("WHATSAPP_VERIFY_TOKEN")) {
+        return new Response(challenge, { status: 200 });
+      }
+      const { data: match } = await supabase.from("settings")
+        .select("shop_id").eq("wa_verify_token", token).maybeSingle();
+      if (match) return new Response(challenge, { status: 200 });
     }
     return new Response("Forbidden", { status: 403 });
   }
 
   if (req.method === "POST") {
     const raw = await req.text();
-    const ok = await verifySignature(Deno.env.get("WHATSAPP_APP_SECRET") || "", raw, req.headers.get("x-hub-signature-256") || "");
-    if (!ok) return new Response("Bad signature", { status: 401 });
+    let body: any = null;
+    try { body = JSON.parse(raw); } catch { /* fall through */ }
+    if (!body) return new Response("Bad body", { status: 400 });
 
-    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const body = JSON.parse(raw);
+    // Which shop sent this? Route by display phone number.
+    const shopNumber = body?.entry?.[0]?.changes?.[0]?.value?.metadata?.display_phone_number || "";
+    let secret = Deno.env.get("WHATSAPP_APP_SECRET") || "";
+    if (shopNumber) {
+      const { data: shop } = await supabase.from("shops")
+        .select("settings!inner(wa_app_secret)")
+        .eq("whatsapp_number", shopNumber).maybeSingle();
+      if (shop?.settings?.wa_app_secret) secret = shop.settings.wa_app_secret;
+    }
+
+    const ok = await verifySignature(secret, raw, req.headers.get("x-hub-signature-256") || "");
+    if (!ok) return new Response("Bad signature", { status: 401 });
 
     for (const entry of body.entry || []) {
       try {
@@ -167,5 +195,6 @@ Deno.serve(async (req) => {
     return new Response("OK", { status: 200 });
   }
 
+  
   return new Response("Method not allowed", { status: 405 });
 });

@@ -36,6 +36,14 @@
 .escalate-tag { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase; color: var(--rose); }
 .escalate-tag svg { width: 13px; height: 13px; }
+.chan-tag { font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .4px;
+  padding: .12rem .4rem; border-radius: 20px; margin-left: .45rem; vertical-align: 1px; }
+.chan-tag.wa { background: rgba(37,211,102,.12); color: #25d366; }
+.chan-tag.web { background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); }
+.wa-me { display: inline-flex; align-items: center; gap: .35rem; padding: .45rem .9rem; font-size: .8rem;
+  color: #128c4a !important; background: rgba(37,211,102,.1); border: 1px solid rgba(37,211,102,.35); }
+.wa-me:hover { background: rgba(37,211,102,.18); }
+
 .quick-replies { display: flex; flex-wrap: wrap; gap: .5rem; padding: 0 1.2rem .6rem; }
 #backToList { display: none; }
 @media (max-width: 900px) {
