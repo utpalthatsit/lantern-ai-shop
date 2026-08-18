@@ -59,15 +59,22 @@ Deno.serve(async (req) => {
       if (!/^\+?[0-9]{6,15}$/.test(phone.replace(/[\s-]/g, ""))) {
         return json({ error: "Enter a valid phone number" }, 400);
       }
+      // Normalize: extract last 10 digits for flexible matching
+      // so +917054499550, 917054499550, 7054499550 all match
+      const digits = phone.replace(/\D/g, "");
+      const last10 = digits.slice(-10);
+      // PostgREST or-filter: match exact, without country code, with +91, or ends-with
+      const pf = `customer_phone.eq.${phone},customer_phone.eq.${last10},customer_phone.eq.+91${last10},customer_phone.like.%${last10}`;
+      const cf = `phone.eq.${phone},phone.eq.${last10},phone.eq.+91${last10},phone.like.%${last10}`;
       const { data: customer } = await supabase.from("customers")
-        .select("id, name, phone").eq("shop_id", shop.id).eq("phone", phone).maybeSingle();
+        .select("id, name, phone").eq("shop_id", shop.id).or(cf).maybeSingle();
       const { data: orders } = await supabase.from("orders")
         .select("id, customer_name, status, total, created_at")
-        .eq("shop_id", shop.id).eq("customer_phone", phone)
+        .eq("shop_id", shop.id).or(pf)
         .order("created_at", { ascending: false }).limit(20);
       const { data: ratings } = await supabase.from("ratings")
         .select("id, order_id, rating, comment, created_at")
-        .eq("shop_id", shop.id).eq("customer_phone", phone)
+        .eq("shop_id", shop.id).or(pf)
         .order("created_at", { ascending: false }).limit(10);
       return json({ customer, orders: orders || [], ratings: ratings || [] });
     }

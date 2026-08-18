@@ -203,8 +203,14 @@ function money(n: number | string, currency: string): string {
   return currency === "INR" ? "₹" + num.toLocaleString("en-IN") : `${currency} ${num}`;
 }
 
+function phoneOrFilter(col: string, phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  const last10 = digits.slice(-10);
+  return `${col}.eq.${phone},${col}.eq.${last10},${col}.eq.+91${last10},${col}.like.%${last10}`;
+}
+
 async function findCustomer(supabase: ReturnType<typeof adminClient>, shopId: string, phone: string) {
-  const { data } = await supabase.from("customers").select("*").eq("shop_id", shopId).eq("phone", phone).maybeSingle();
+  const { data } = await supabase.from("customers").select("*").eq("shop_id", shopId).or(phoneOrFilter("phone", phone)).maybeSingle();
   return data || null;
 }
 
@@ -276,8 +282,8 @@ const TOOL_IMPLS: Record<string, (ctx: Ctx, args: any) => Promise<string>> = {
     const customer = await findCustomer(ctx.supabase, ctx.shopId, phone);
     if (!customer) return ok({ customer: null, note: "No customer with this phone yet." });
     const [orders, bookings] = await Promise.all([
-      ctx.supabase.from("orders").select("id, customer_name, status, total, created_at").eq("shop_id", ctx.shopId).eq("customer_phone", phone).order("created_at", { ascending: false }).limit(20),
-      ctx.supabase.from("bookings").select("id, service, staff, start_time, end_time, status").eq("shop_id", ctx.shopId).eq("customer_phone", phone).order("start_time", { ascending: false }).limit(20),
+      ctx.supabase.from("orders").select("id, customer_name, status, total, created_at").eq("shop_id", ctx.shopId).or(phoneOrFilter("customer_phone", phone)).order("created_at", { ascending: false }).limit(20),
+      ctx.supabase.from("bookings").select("id, service, staff, start_time, end_time, status").eq("shop_id", ctx.shopId).or(phoneOrFilter("customer_phone", phone)).order("start_time", { ascending: false }).limit(20),
     ]);
     return ok({ customer: { id: customer.id, name: customer.name, phone: customer.phone, email: customer.email }, orders: orders.data || [], bookings: bookings.data || [] });
   },
@@ -373,7 +379,7 @@ const TOOL_IMPLS: Record<string, (ctx: Ctx, args: any) => Promise<string>> = {
     const phone = String(args?.customer_phone || "").trim();
     if (!phone) return fail("Provide booking_id or customer_phone.");
     const { data } = await ctx.supabase.from("bookings").select("id, service, staff, start_time, end_time, status, notes")
-      .eq("shop_id", ctx.shopId).eq("customer_phone", phone).order("start_time", { ascending: false }).limit(10);
+      .eq("shop_id", ctx.shopId).or(phoneOrFilter("customer_phone", phone)).order("start_time", { ascending: false }).limit(10);
     return ok(data || []);
   },
 
@@ -419,7 +425,7 @@ const TOOL_IMPLS: Record<string, (ctx: Ctx, args: any) => Promise<string>> = {
     const { data } = await ctx.supabase.from("orders")
       .select("id, customer_name, status, total, notes, created_at, order_items(name, price, quantity)")
    
-      .eq("shop_id", ctx.shopId).eq("customer_phone", phone).order("created_at", { ascending: false }).limit(10);
+      .eq("shop_id", ctx.shopId).or(phoneOrFilter("customer_phone", phone)).order("created_at", { ascending: false }).limit(10);
     return ok(data || []);
   },
 
