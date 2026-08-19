@@ -1,5 +1,5 @@
 // ============================================================
-// ai-chat-handler — ShopSathi's controlled AI brain.
+// ai-chat-handler — VyaparSathi's controlled AI brain.
 // The AI can only act through a fixed set of server-side tools
 // (search_products, check_inventory, create_booking, create_order,
 // get_customer, ...). It can never run raw SQL. Every tool call is
@@ -181,6 +181,66 @@ const TOOLS: { name: string; description: string; input_schema: Record<string, u
       type: "object",
       properties: { reason: { type: "string" } },
       required: ["reason"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "get_cash_flow",
+    description: "Get the cash flow forecast for the next N days (default 30). Shows expected income, expenses, receivables, payables, and daily breakdown.",
+    input_schema: {
+      type: "object",
+      properties: {
+        days: { type: "integer", description: "Number of days to forecast (1-90, default 30)" },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "create_payment_reminder",
+    description: "Create a payment reminder for a customer (incoming = they owe you, outgoing = you owe them). Set due_date and amount.",
+    input_schema: {
+      type: "object",
+      properties: {
+        customer_name: { type: "string" },
+        customer_phone: { type: "string" },
+        amount: { type: "number", description: "Payment amount" },
+        type: { type: "string", enum: ["incoming", "outgoing"], description: "incoming = customer owes you, outgoing = you owe customer/supplier" },
+        due_date: { type: "string", description: "ISO date (YYYY-MM-DD) when payment is due" },
+        notes: { type: "string" },
+      },
+      required: ["customer_name", "amount", "type", "due_date"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "update_payment_status",
+    description: "Mark an order as paid, partially paid, or unpaid. Optionally record amount_paid and payment_method.",
+    input_schema: {
+      type: "object",
+      properties: {
+        order_id: { type: "string" },
+        payment_status: { type: "string", enum: ["paid", "partial", "unpaid"] },
+        amount_paid: { type: "number" },
+        payment_method: { type: "string", description: "e.g. UPI, cash, card, bank transfer" },
+      },
+      required: ["order_id", "payment_status"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "add_cash_flow_entry",
+    description: "Add a recurring or one-time income/expense entry for cash flow forecasting. E.g. monthly rent, weekly salary, quarterly tax.",
+    input_schema: {
+      type: "object",
+      properties: {
+        description: { type: "string" },
+        amount: { type: "number" },
+        type: { type: "string", enum: ["income", "expense"] },
+        category: { type: "string", enum: ["sales", "booking", "other_income", "rent", "salary", "supplies", "utilities", "tax", "other"] },
+        frequency: { type: "string", enum: ["once", "weekly", "monthly", "quarterly"] },
+        next_date: { type: "string", description: "ISO date (YYYY-MM-DD) for the next occurrence" },
+      },
+      required: ["description", "amount", "type", "next_date"],
       additionalProperties: false,
     },
   },
@@ -434,6 +494,141 @@ const TOOL_IMPLS: Record<string, (ctx: Ctx, args: any) => Promise<string>> = {
   },
 };
 
+  async get_cash_flow(ctx, args) {
+    const days = Math.min(90, Math.max(1, Number(args?.days) || 30));
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const horizon = new Date(now);
+    horizon.setDate(horizon.getDate() + days);
+
+    const [completedOrders, pendingOrders, cashEntries, paymentReminders] = await Promise.all([
+      ctx.supabase.from("orders")
+        .select("id, total, status, payment_status, amount_paid, due_date, created_at")
+        .eq("shop_id", ctx.shopId).eq("status", "completed")
+        .gte("created_at", now.toISOString()).lte("created_at", horizon.toISOString()),
+      ctx.supabase.from("orders")
+        .select("id, total, status, payment_status, amount_paid, due_date, customer_name, created_at")
+        .eq("shop_id", ctx.shopId).in("status", ["pending", "confirmed", "processing"])
+        .lte("created_at", horizon.toISOString()),
+      ctx.supabase.from("cash_flow_entries")
+        .select("*").eq("shop_id", ctx.shopId).eq("active", true)
+        .lte("next_date", horizon.toISOString().slice(0, 10)),
+      ctx.supabase.from("payment_reminders")
+        .select("id, customer_name, amount, type, status, due_date")
+        .eq("shop_id", ctx.shopId).eq("status", "pending")
+        .lte("due_date", horizon.toISOString().slice(0, 10)),
+    ]);
+
+    const totalIncome = (completedOrders.data || []).reduce((s: number, o: any) => s + Number(o.total || 0), 0);
+    const totalExpense = (cashEntries.data || []).filter((e: any) => e.type === "expense")
+      .reduce((s: number, e: any) => s + Number(e.amount || 0) * (e.frequency === "once" ? 1 : Math.ceil(days / (e.frequency === "weekly" ? 7 : e.frequency === "monthly" ? 30 : 90))), 0);
+    const totalReceivables = (pendingOrders.data || []).filter((o: any) => o.payment_status !== "paid")
+      .reduce((s: number, o: any) => s + Number(o.total || 0) - Number(o.amount_paid || 0), 0);
+    const totalPayables = (paymentReminders.data || []).reduce((s: number, r: any) => s + Number(r.amount || 0), 0);
+    const overdue = (paymentReminders.data || []).filter((r: any) => r.due_date < now.toISOString().slice(0, 10));
+
+    return ok({
+      days,
+      summary: {
+        expected_income: Math.round(totalIncome * 100) / 100,
+        expected_expenses: Math.round(totalExpense * 100) / 100,
+        net_flow: Math.round((totalIncome - totalExpense) * 100) / 100,
+        receivables: Math.round(totalReceivables * 100) / 100,
+        payables: Math.round(totalPayables * 100) / 100,
+        overdue_count: overdue.length,
+      },
+      receivables: (pendingOrders.data || []).filter((o: any) => o.payment_status !== "paid")
+        .map((o: any) => ({ customer: o.customer_name, amount: Number(o.total || 0) - Number(o.amount_paid || 0), due: o.due_date })),
+      upcoming_payments: (paymentReminders.data || []).map((r: any) => ({ to: r.customer_name, amount: r.amount, due: r.due_date, type: r.type })),
+    });
+  },
+
+  async create_payment_reminder(ctx, args) {
+    const name = String(args?.customer_name || "").trim();
+    const amount = Number(args?.amount);
+    const type = ["incoming", "outgoing"].includes(args?.type) ? args.type : "incoming";
+    const dueDate = String(args?.due_date || "").trim();
+    if (!name) return fail("Customer name is required.");
+    if (!amount || amount <= 0) return fail("Amount must be a positive number.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) return fail("due_date must be YYYY-MM-DD format.");
+
+    const phone = String(args?.customer_phone || "").trim() || null;
+    let customerId: string | null = null;
+    if (phone) {
+      const customer = await findCustomer(ctx.supabase, ctx.shopId, phone);
+      customerId = customer?.id || null;
+    }
+
+    const { data, error } = await ctx.supabase.from("payment_reminders").insert({
+      shop_id: ctx.shopId,
+      customer_name: name,
+      customer_phone: phone,
+      customer_id: customerId,
+      amount,
+      type,
+      due_date: dueDate,
+      status: "pending",
+      notes: String(args?.notes || "").trim() || null,
+    }).select().single();
+
+    if (error) return fail("Could not create payment reminder: " + error.message);
+    return ok({ id: data.id, customer_name: name, amount, type, due_date: dueDate, status: "pending" });
+  },
+
+  async update_payment_status(ctx, args) {
+    const orderId = String(args?.order_id || "");
+    const status = ["paid", "partial", "unpaid"].includes(args?.payment_status) ? args.payment_status : "unpaid";
+    const amountPaid = Number(args?.amount_paid) || 0;
+    const method = String(args?.payment_method || "").trim() || null;
+
+    if (!orderId) return fail("order_id is required.");
+
+    const { data: order } = await ctx.supabase.from("orders")
+      .select("id, total").eq("id", orderId).eq("shop_id", ctx.shopId).maybeSingle();
+    if (!order) return fail("Order not found.");
+
+    const patch: Record<string, any> = { payment_status: status };
+    if (status === "paid") {
+      patch.amount_paid = Number(order.total);
+    } else if (status === "partial" && amountPaid > 0) {
+      patch.amount_paid = Math.min(amountPaid, Number(order.total));
+    } else if (status === "unpaid") {
+      patch.amount_paid = 0;
+    }
+    if (method) patch.payment_method = method;
+
+    const { error } = await ctx.supabase.from("orders").update(patch).eq("id", orderId).eq("shop_id", ctx.shopId);
+    if (error) return fail("Could not update payment status: " + error.message);
+    return ok({ order_id: orderId, payment_status: status, amount_paid: patch.amount_paid ?? order.total });
+  },
+
+  async add_cash_flow_entry(ctx, args) {
+    const desc = String(args?.description || "").trim();
+    const amount = Number(args?.amount);
+    const type = ["income", "expense"].includes(args?.type) ? args.type : "income";
+    const category = String(args?.category || "other").trim();
+    const frequency = ["once", "weekly", "monthly", "quarterly"].includes(args?.frequency) ? args.frequency : "once";
+    const nextDate = String(args?.next_date || "").trim();
+
+    if (!desc) return fail("Description is required.");
+    if (!amount || amount <= 0) return fail("Amount must be a positive number.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(nextDate)) return fail("next_date must be YYYY-MM-DD format.");
+
+    const { data, error } = await ctx.supabase.from("cash_flow_entries").insert({
+      shop_id: ctx.shopId,
+      description: desc,
+      amount,
+      type,
+      category,
+      frequency,
+      next_date: nextDate,
+      active: true,
+    }).select().single();
+
+    if (error) return fail("Could not add cash flow entry: " + error.message);
+    return ok({ id: data.id, description: desc, amount, type, category, frequency, next_date: nextDate });
+  },
+
 // ------------------------------------------------------------
 // Claude tool loop
 // ------------------------------------------------------------
@@ -487,7 +682,7 @@ function buildSystemPrompt(shop: any, settings: any): string {
     ? JSON.stringify(shop.hours)
     : "not set";
   const lang = settings?.language || shop.language || "en";
-  return `You are ShopSathi, the AI assistant working for ${shop.name}${shop.category ? ` (a ${shop.category})` : ""}.
+  return `You are VyaparSathi, the AI assistant working for ${shop.name}${shop.category ? ` (a ${shop.category})` : ""}.
 
 Today is ${new Date().toISOString().slice(0, 10)}.
 

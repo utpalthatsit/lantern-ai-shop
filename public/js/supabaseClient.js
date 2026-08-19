@@ -1,5 +1,5 @@
 /* ============================================================
-   ShopSathi — supabaseClient.js (real data layer)
+   VyaparSathi — supabaseClient.js (real data layer)
    supabase-js v2 handles auth sessions, realtime and REST.
    Every query is scoped by shop_id; RLS enforces ownership.
    There is no demo mode: if Supabase isn't configured the app
@@ -16,7 +16,7 @@ export const supabase = isConfigured
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        storageKey: "shopsathi.auth",
+        storageKey: "vyaparsathi.auth",
       },
     })
   : null;
@@ -168,6 +168,23 @@ export const db = {
     const { data, error } = await q.limit(200);
     if (error) throw error;
     return data || [];
+  },
+
+  /** Lookup past orders + bills by phone number (flexible: matches last 10 digits). */
+  async ordersByPhone(phone) {
+    if (!phone || phone.length < 5) return { orders: [], customer: null };
+    const digits = phone.replace(/[^\d]/g, "");
+    const last10 = digits.slice(-10);
+    if (last10.length < 5) return { orders: [], customer: null };
+    const { data: orders, error: oErr } = await supabase.from("orders")
+      .select("*, order_items(*)").eq("shop_id", shopId())
+      .ilike("customer_phone", `%${last10}%`)
+      .order("created_at", { ascending: false }).limit(20);
+    if (oErr) throw oErr;
+    const { data: cust } = await supabase.from("customers")
+      .select("*").eq("shop_id", shopId())
+      .ilike("phone", `%${last10}%`).maybeSingle();
+    return { orders: orders || [], customer: cust || null };
   },
 
   async createOrder({ customer_name, customer_phone, items, notes }) {
@@ -442,5 +459,80 @@ export const db = {
 
   async generateDraft(channel = "wa") {
     return fn("generate-post", { shop_id: shopId(), channel });
+  },
+
+  /* ---------- Cash Flow & Payment Reminders ---------- */
+  async cashFlowForecast(days = 30) {
+    return fn("cash-flow-forecast", { shop_id: shopId(), days });
+  },
+
+  async paymentReminders(opts = {}) {
+    let q = supabase.from("payment_reminders").select("*")
+      .eq("shop_id", shopId()).order("due_date", { ascending: true });
+    if (opts.status) q = q.eq("status", opts.status);
+    if (opts.type) q = q.eq("type", opts.type);
+    const { data, error } = await q.limit(100);
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createPaymentReminder(data) {
+    const { data: row, error } = await supabase.from("payment_reminders")
+      .insert({ shop_id: shopId(), ...data }).select().single();
+    if (error) throw error;
+    return row;
+  },
+
+  async updatePaymentReminder(id, patch) {
+    const { data, error } = await supabase.from("payment_reminders").update(patch)
+      .eq("id", id).eq("shop_id", shopId()).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deletePaymentReminder(id) {
+    const { error } = await supabase.from("payment_reminders").delete()
+      .eq("id", id).eq("shop_id", shopId());
+    if (error) throw error;
+  },
+
+  async updateOrderPayment(orderId, paymentStatus, amountPaid, paymentMethod) {
+    const patch = { payment_status: paymentStatus };
+    if (amountPaid !== undefined) patch.amount_paid = amountPaid;
+    if (paymentMethod) patch.payment_method = paymentMethod;
+    const { data, error } = await supabase.from("orders").update(patch)
+      .eq("id", orderId).eq("shop_id", shopId()).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  async cashFlowEntries(opts = {}) {
+    let q = supabase.from("cash_flow_entries").select("*")
+      .eq("shop_id", shopId()).order("next_date", { ascending: true });
+    if (opts.active !== undefined) q = q.eq("active", opts.active);
+    if (opts.type) q = q.eq("type", opts.type);
+    const { data, error } = await q.limit(100);
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createCashFlowEntry(data) {
+    const { data: row, error } = await supabase.from("cash_flow_entries")
+      .insert({ shop_id: shopId(), ...data }).select().single();
+    if (error) throw error;
+    return row;
+  },
+
+  async updateCashFlowEntry(id, patch) {
+    const { data, error } = await supabase.from("cash_flow_entries").update(patch)
+      .eq("id", id).eq("shop_id", shopId()).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteCashFlowEntry(id) {
+    const { error } = await supabase.from("cash_flow_entries").delete()
+      .eq("id", id).eq("shop_id", shopId());
+    if (error) throw error;
   },
 };

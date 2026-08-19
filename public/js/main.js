@@ -1,5 +1,5 @@
 /* ============================================================
-   ShopSathi — main.js (entry point)
+   VyaparSathi — main.js (entry point)
    index.html → cinematic landing
    app.html   → auth gate → onboarding → router over 11 tabs
    ============================================================ */
@@ -19,6 +19,7 @@ import * as conversations from "./pages/conversations.js";
 import * as aiAssistant from "./pages/aiAssistant.js";
 import * as notifications from "./pages/notifications.js";
 import * as marketing from "./pages/marketing.js";
+import * as cashflow from "./pages/cashflow.js";
 import * as settings from "./pages/settings.js";
 
 const isApp = document.body.id === "appPage";
@@ -134,9 +135,10 @@ const TABS = {
   billing:     { title: "Billing",        sub: "GST invoices — type or just speak",             init: billing.init,     bind: billing.bind,     render: billing.render },
   bookings:    { title: "Bookings",       sub: "Appointments & reminders",                  init: bookings.init,    bind: bookings.bind,    render: bookings.render },
   conversations: { title: "Conversations", sub: "Live WhatsApp & web chat",                init: conversations.init, bind: conversations.bind, render: conversations.render },
-  ai:          { title: "AI Assistant",   sub: "Ask ShopSathi anything about your shop",    init: aiAssistant.init, bind: aiAssistant.bind, render: aiAssistant.render },
+  ai:          { title: "AI Assistant",   sub: "Ask VyaparSathi anything about your shop",    init: aiAssistant.init, bind: aiAssistant.bind, render: aiAssistant.render },
   notifications: { title: "Notifications", sub: "What needs your attention",               init: notifications.init, bind: notifications.bind, render: notifications.render },
   marketing:   { title: "Marketing",      sub: "AI-drafted posts — you approve first",      init: marketing.init,   bind: marketing.bind,   render: marketing.render },
+  cashflow:    { title: "Cash Flow",      sub: "Forecast finances & track payments",      init: cashflow.init,    bind: cashflow.bind,    render: cashflow.render },
   settings:    { title: "Settings",       sub: "Your shop profile & preferences",           init: settings.init,    bind: settings.bind,    render: settings.render },
 };
 
@@ -344,7 +346,7 @@ function initOnboarding() {
       });
       await supabase.from("shop_members").insert({ shop_id: shop.id, user_id: user.id, role: "owner" });
 
-      toast({ title: `${name} is live`, body: "Welcome to ShopSathi — add your products next.", tone: "green", iconName: "checkCircle" });
+      toast({ title: `${name} is live`, body: "Welcome to VyaparSathi — add your products next.", tone: "green", iconName: "checkCircle" });
       clearErr();
       enterConsole(shop);
     } catch (e) {
